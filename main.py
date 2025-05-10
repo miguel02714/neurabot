@@ -21,6 +21,8 @@ db.init_app(app)
 # Login manager
 lm = LoginManager(app)
 lm.login_view = 'login'
+with app.app_context():
+    db.create_all()
 
 @lm.user_loader
 def user_loader(id):
