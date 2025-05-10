@@ -64,11 +64,11 @@ def responder(mensagem):
             return pergunta_original.split(":")[1].strip()
         return None
 
-    # 1. Responde com tema atual
+    # 1. Tenta com tema atual
     if tema_atual:
         resposta = buscar_resposta(qa_dict[tema_atual])
         if resposta:
-            return {f'"Ola{resposta}'}
+            return f"Olá {resposta}"
 
     # 2. Procura em outros temas
     for tema, perguntas in qa_dict.items():
@@ -80,10 +80,25 @@ def responder(mensagem):
     # 3. Nenhuma resposta encontrada
     return "Desculpe, não entendi isso. Pode reformular?"
 
-@app.route("/")
+@app.route("/chat", methods=["GET", "POST"])
 @login_required
-def home():
-    return render_template("index.html", nome_usuario=current_user.nome)
+def chat():
+    if request.method == "POST":
+        data = request.get_json()
+        user_input = data.get("message", "")
+        response = responder(user_input)
+
+        nova_mensagem = Mensagem(conteudo=user_input, usuario_id=current_user.id)
+        db.session.add(nova_mensagem)
+        db.session.commit()
+
+        return jsonify({"response": response})
+
+    # Método GET: carrega a interface
+    return render_template("index.html",
+        nome_usuario=current_user.nome,
+        email_usuario=current_user.email,
+        localizacao_usuario=getattr(current_user, "localizacao", "Não definida"))
 
 @app.route("/mensagens")
 @login_required
@@ -97,27 +112,6 @@ def mensagens():
         } for m in mensagens
     ])
 
-@app.route("/chat", methods=["GET", "POST"])
-@login_required
-def chat():
-    if request.method == "POST":
-        data = request.get_json()
-        user_input = data.get("message", "")
-        response = responder(user_input)
-
-        # Salvar no banco
-        nova_mensagem = Mensagem(conteudo=user_input, usuario_id=current_user.id)
-        db.session.add(nova_mensagem)
-        db.session.commit()
-
-        return jsonify({"response": response})
-
-    # GET: renderiza página
-    return render_template("index.html",
-        nome_usuario=current_user.nome,
-        email_usuario=current_user.email,
-        localizacao_usuario=current_user.localizacao)
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -128,32 +122,50 @@ def login():
             return render_template("login.html", erro="Por favor, preencha ambos os campos.")
 
         user = Usuario.query.filter_by(email=email).first()
-        if not user or user.senha != senha:
+        if not user or not check_password_hash(user.senha, senha):
             return render_template("login.html", erro="Usuário ou senha incorretos.")
 
         login_user(user)
-        return redirect(url_for("home"))
+        session.pop('tema_atual', None)
+        return redirect(url_for("chat"))
+
     return render_template("login.html")
 
 @app.route("/registrar", methods=["GET", "POST"])
 def registrar():
     if request.method == "POST":
-        nome = request.form.get("nomeForm")
-        email = request.form.get("emailForm")
-        senha = request.form.get("senhaForm")
+        nome = request.form.get("nome")
+        email = request.form.get("email")
+        senha = request.form.get("senha")
 
-        novo_usuario = Usuario(nome=nome, email=email, senha=senha)
+        # Verifica se todos os campos foram preenchidos
+        if not nome or not email or not senha:
+            return render_template("registrar.html", erro="Todos os campos são obrigatórios.")
+
+        # Verifica se o email já está cadastrado
+        if Usuario.query.filter_by(email=email).first():
+            return render_template("registrar.html", erro="Email já cadastrado.")
+
+        # Cria novo usuário
+        senha_hash = generate_password_hash(senha)
+        novo_usuario = Usuario(nome=nome, email=email, senha=senha_hash)
         db.session.add(novo_usuario)
         db.session.commit()
-        login_user(novo_usuario)
-        return redirect(url_for("home"))
 
+        # Faz login automático
+        login_user(novo_usuario)
+        session.pop('tema_atual', None)
+
+        return redirect(url_for("chat"))
+
+    # Se for GET, mostra o formulário de registro
     return render_template("registrar.html")
 
 @app.route("/logout", methods=["POST"])
 @login_required
 def logout():
     logout_user()
+    session.pop('tema_atual', None)
     return redirect(url_for("login"))
 
 if __name__ == "__main__":
