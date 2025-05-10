@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: #1a1a1d;
+            padding: 20px;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+            background: #121215;
+            border-radius: 12px;
+            padding: 40px 30px;
+            box-shadow: 0 0 20px rgba(254, 3, 246, 0.3);
+            overflow: hidden;
+        }
+
+        .container::before,
+        .container::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: -50%;
+            left: -50%;
+            transform-origin: bottom right;
+            animation: girar 8s linear infinite;
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        .container::before {
+            background: linear-gradient(0deg, transparent, #fe03f6);
+        }
+
+        .container::after {
+            background: linear-gradient(0deg, transparent, #2376f5);
+            animation-delay: 4s;
+        }
+
+        @keyframes girar {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .form {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form h2 {
+            color: #fe03f6;
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .box {
+            position: relative;
+            width: 100%;
+        }
+
+        .box input[type="email"],
+        .box input[type="password"] {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            background: transparent;
+            border-bottom: 2px solid #fe03f6;
+            font-size: 16px;
+            color: #fff;
+            outline: none;
+        }
+
+        .box input::placeholder {
+            color: #aaa;
+        }
+
+        .box input[type="submit"] {
+            background: #fe03f6;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        .box input[type="submit"]:hover {
+            background: #d002c4;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .form h2 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <form class="form" method="POST" action="/login">
+            <h2>Login</h2>
+
+            <div class="box">
+                <input type="email" id="email" name="email" placeholder="E-mail" required>
+            </div>
+
+            <div class="box">
+                <input type="password" id="senha" name="senha" placeholder="Senha" required>
+            </div>
+
+            <div class="box">
+                <input type="submit" value="Entrar">
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>
