@@ -17,7 +17,9 @@ app = Flask(__name__)
 app.secret_key = 'lancode'
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///database.db"
 db.init_app(app)
-
+with app.app_context():
+    db.create_all()
+    print("Banco de dados e tabelas criadas com sucesso.")
 # Login manager
 lm = LoginManager(app)
 lm.login_view = 'login'
