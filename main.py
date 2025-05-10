@@ -21,8 +21,6 @@ db.init_app(app)
 # Login manager
 lm = LoginManager(app)
 lm.login_view = 'login'
-with app.app_context():
-    db.create_all()
 
 @lm.user_loader
 def user_loader(id):
@@ -119,16 +117,25 @@ def login():
     if request.method == "POST":
         email = request.form.get("email")
         senha = request.form.get("senha")
-
+        
         if not email or not senha:
             return render_template("login.html", erro="Por favor, preencha ambos os campos.")
 
+        # Verifica se o usuário existe
         user = Usuario.query.filter_by(email=email).first()
-        if not user or not check_password_hash(user.senha, senha):
-            return render_template("login.html", erro="Usuário ou senha incorretos.")
 
+        # Verifica se o usuário existe e a senha está correta
+        if not user or user.senha != senha:
+         return render_template("login.html", erro="Email ou senha incorretos.")
+
+
+        # Faz o login do usuário
         login_user(user)
+
+        # Limpa qualquer variável de sessão
         session.pop('tema_atual', None)
+
+        # Redireciona para a página "chat" após login bem-sucedido
         return redirect(url_for("chat"))
 
     return render_template("login.html")
@@ -139,7 +146,6 @@ def registrar():
         nome = request.form.get("nome")
         email = request.form.get("email")
         senha = request.form.get("senha")
-        print (f'{nome}')
 
         # Verifica se todos os campos foram preenchidos
         if not nome or not email or not senha:
@@ -150,8 +156,8 @@ def registrar():
             return render_template("registrar.html", erro="Email já cadastrado.")
 
         # Cria novo usuário
-        senha_hash = generate_password_hash(senha)
-        novo_usuario = Usuario(nome=nome, email=email, senha=senha_hash)
+        
+        novo_usuario = Usuario(nome=nome, email=email, senha=senha)
         db.session.add(novo_usuario)
         db.session.commit()
 
@@ -161,8 +167,8 @@ def registrar():
 
         return redirect(url_for("chat"))
 
-    # Se for GET, mostra o formulário de registro
     return render_template("registrar.html")
+
 
 @app.route("/logout", methods=["POST"])
 @login_required
