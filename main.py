@@ -137,6 +137,7 @@ def registrar():
         nome = request.form.get("nome")
         email = request.form.get("email")
         senha = request.form.get("senha")
+        print (f'{nome}')
 
         # Verifica se todos os campos foram preenchidos
         if not nome or not email or not senha:
