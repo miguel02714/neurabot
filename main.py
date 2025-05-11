@@ -49,6 +49,21 @@ def normalizar(texto):
     texto = texto.translate(str.maketrans('', '', string.punctuation + ' '))
     return texto.lower()
 
+
+@app.route('/perfil')
+def perfil ():
+    return render_template('perfil.html')
+
+@app.route('/ir-perfil', methods=["GET", "POST"])
+def perfilGo():
+    return redirect(url_for('perfil'))
+
+
+
+
+
+
+
 def responder(mensagem):
     mensagem_norm = normalizar(mensagem)
     tema_atual = session.get('tema_atual', None)
@@ -170,7 +185,9 @@ def registrar():
         return redirect(url_for("chat"))
 
     return render_template("registrar.html")
-
+@app.route('/voltar', methods=["GET", "POST"] )
+def voltar():
+    return redirect(url_for('chat'))
 
 @app.route("/logout", methods=["POST"])
 @login_required

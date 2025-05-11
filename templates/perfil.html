@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Perfil do Usuário</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0d0d0d, #1f1f1f);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .profile-card {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border-radius: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 40px rgba(0, 255, 200, 0.05);
+      padding: 40px 30px;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    .profile-img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #00ffaa;
+      margin-bottom: 20px;
+      transition: transform 0.3s ease;
+      box-shadow: 0 0 20px rgba(0, 255, 200, 0.2);
+    }
+
+    .profile-img:hover {
+      transform: scale(1.05);
+    }
+
+    .profile-card h2 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #ffffff;
+    }
+
+    .profile-card p {
+      font-size: 15px;
+      margin: 8px 0;
+      color: #ddd;
+    }
+
+    .profile-card strong {
+      color: #00ffaa;
+    }
+
+    .edit-btn {
+      margin-top: 25px;
+      padding: 12px 24px;
+      border: none;
+      background: linear-gradient(135deg, #00ffaa, #00ddb3);
+      color: #000;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .edit-btn:hover {
+      opacity: 0.9;
+      box-shadow: 0 0 15px #00ffaa70;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 500px) {
+      .profile-card {
+        padding: 30px 20px;
+      }
+
+      .profile-img {
+        width: 100px;
+        height: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="profile-card">
+    <img src="https://sdmntpreastus.oaiusercontent.com/files/00000000-9dc8-61f9-8bf6-b4f36478e464/raw?se=2025-05-10T23%3A57%3A24Z&sp=r&sv=2024-08-04&sr=b&scid=00000000-0000-0000-0000-000000000000&skoid=5cab1ff4-c20d-41dc-babb-df0c2cc21dd4&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-10T19%3A15%3A51Z&ske=2025-05-11T19%3A15%3A51Z&sks=b&skv=2024-08-04&sig=aCn1Ps%2BNzkn1ywK/UBxc8uG3naGB5MSV%2BMNBB3dv1Dg%3D" alt="Foto de perfil" class="profile-img" />
+    <h2>Perfil do Usuário</h2>
+    <p><strong>Nome:</strong> {{ nome_usuario }}</p>
+    <p><strong>Email:</strong> {{ email_usuario }}</p>
+    <p><strong>Localização:</strong> {{ localizacao_usuario }}</p>
+    
+    <form action="/voltar" method="post">
+    <button type="submit" class="edit-btn">Voltar ao Chat</button>
+    </form>
+  </div>
+
+</body>
+</html>

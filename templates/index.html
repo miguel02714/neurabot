@@ -234,7 +234,9 @@
     <div class="chat-header">
       <img src="NEURA BOT (2).png" alt="" class="teste1">
       <p class="nome-neura">NEURA BOT</p>
-      <button class="profile-btn" onclick="toggleProfile()">Perfil</button>
+      <form action="/ir-perfil" method="post">
+      <button type="submit" class="profile-btn">Perfil</button>
+      </form>
     </div>
 
     <div class="chat-box" id="chat-box">
@@ -247,16 +249,7 @@
     </div>
 
     <!-- Aba de Perfil -->
-    <div class="profile-sidebar" id="profile-sidebar">
-        <button class="close-btn" onclick="toggleProfile()">Fechar</button>
-        <h2>Perfil do Usuário</h2>
-        <img src="https://via.placeholder.com/100" alt="Foto de perfil" />
-        <p><strong>Nome:</strong> {{ nome_usuario }}</p>
-        <p><strong>Email:</strong> {{ email_usuario }}</p>
-        <p><strong>Localização:</strong> {{ localizacao_usuario }}</p>
-        <p><strong>Data de Cadastro:</strong> 15 de Fevereiro de 2024</p>
-      </div>
-  </div>
+    
 
   <script>
     function appendMessage(message, isUser = false) {
