@@ -1,6 +1,7 @@
 Flask==2.2.5
 Flask-Login==0.6.3
-Flask-SQLAlchemy==2.5.1  # Adicione isso se estiver usando SQLAlchemy
+Flask-SQLAlchemy==2.5.1
+SQLAlchemy==1.4.49
 Werkzeug==2.2.3
 gunicorn==21.2.0
-requests==2.28.1  # Caso precise de requests
+requests==2.28.1
