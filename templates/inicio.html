@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NEURA BOT</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+      background-color: #000;
+      overflow: hidden;
+    }
+
+    #vanta-bg {
+      width: 100%;
+      height: 100vh;
+      position: relative;
+      padding: 40px 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .neura {
+      font-weight: 900;
+      font-size: 32px;
+      position: absolute;
+      top: 30px;
+      left: 40px;
+      z-index: 2;
+    }
+
+    .buttons {
+      position: absolute;
+      top: 30px;
+      right: 40px;
+      z-index: 2;
+      display: flex;
+      gap: 16px;
+    }
+
+    .buttons button {
+      padding: 14px 32px;
+      font-size: 1.1rem;
+      background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: bold;
+      letter-spacing: 0.8px;
+      box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+      
+      transition: all 0.3s ease-in-out;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .buttons button::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -75%;
+      width: 200%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      transform: skewX(-20deg);
+      transition: left 0.6s ease;
+    }
+
+    .buttons button:hover::before {
+      left: 125%;
+    }
+
+    .buttons button:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 8px 24px rgba(0, 123, 255, 0.5);
+    }
+
+    .buttons button:active {
+      transform: scale(0.98);
+    }
+
+    .content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 60px;
+      z-index: 1;
+      animation: fadeIn 1.5s ease-in-out forwards;
+      
+ 
+    }
+
+    .text-box {
+      max-width: 600px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 5px 8px 32px rgba(0, 0, 0, 0.6);
+    }
+
+    .text-box h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      text-shadow: 1px 1px 10px rgba(0, 0, 0, 0.6);
+    }
+
+    .text-box p {
+      font-size: 1.25rem;
+      line-height: 1.6;
+    }
+
+    .model3d {
+      width: 500px;
+      height: 500px;
+      animation: fadeIn 2s ease-in-out 0.5s forwards;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      #vanta-bg {
+        padding: 20px;
+      }
+
+      .content {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .text-box h1 {
+        font-size: 2rem;
+      }
+
+      .text-box p {
+        font-size: 1rem;
+      }
+
+      .model3d {
+        width: 100%;
+        height: 300px;
+      }
+
+      .buttons {
+        top: 15px;
+        right: 15px;
+        flex-direction: column;
+      }
+
+      .buttons button {
+        padding: 10px 20px;
+        font-size: 1rem;
+      }
+
+      .neura {
+        font-size: 24px;
+        top: 15px;
+        left: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="vanta-bg">
+    <p class="neura">NEURA <span style="color: #3fa4ff;">BOT</span></p>
+
+    <div class="buttons">
+      <form action="/ir-login">
+      <button class="login">LOGIN</button>
+      </form>
+      <form action="/registrar-conta">
+      <button class="registro">REGISTRO</button>
+      </form>
+    </div>
+
+    <div class="content">
+      <div class="text-box">
+        <h1>Bem-vindo à Neura Bot</h1>
+        <p>
+          A sua primeira inteligência artificial brasileira de alto nível,<br>
+          feita para pensar com você, aprender com você<br>
+          e evoluir junto com o Brasil — com inovação, inteligência e propósito.
+        </p>
+      </div>
+
+      <model-viewer class="model3d"
+        src="robo_face.glb"
+        alt="Modelo 3D"
+        auto-rotate
+        camera-controls
+        background-color="#000000">
+      </model-viewer>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+  <script>
+    VANTA.NET({
+      el: "#vanta-bg",
+      mouseControls: true,
+      touchControls: true,
+      gyroControls: false,
+      minHeight: 200.00,
+      minWidth: 200.00,
+      scale: 1.00,
+      scaleMobile: 1.00,
+      color: 0x3fa4ff
+    });
+  </script>
+</body>
+</html>

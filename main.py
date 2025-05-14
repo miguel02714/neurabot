@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import difflib
 import unicodedata
 import string
+import requests
 
 from models import Usuario, Mensagem
 from db import db
@@ -17,18 +18,28 @@ app = Flask(__name__)
 app.secret_key = 'lancode'
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///database.db"
 db.init_app(app)
+
 with app.app_context():
     db.create_all()
-    print("Banco de dados e tabelas criadas com sucesso.")
-# Login manager
+
+# Login Manager
 lm = LoginManager(app)
-lm.login_view = 'login'
+lm.login_view = 'login_view'
 
 @lm.user_loader
 def user_loader(id):
-    return db.session.query(Usuario).filter_by(id=id).first()
+    return Usuario.query.get(int(id))
 
-# Dicionário de QA para cada categoria
+
+@app.route('/ir-login', methods=["GET", "POST"])
+def irlogin():
+    return redirect(url_for('login_view'))
+
+
+
+
+
+# Dicionário QA
 qa_dict = {
     "apresentacao": apresentacao,
     "funcionalidade": funcionalidade,
@@ -41,61 +52,125 @@ qa_dict = {
     "tecnologia_e_redes_sociais": tecnologia_e_redes_sociais
 }
 
+# Normalização de texto
 def normalizar(texto):
-    texto = ''.join(
-        c for c in unicodedata.normalize('NFD', texto)
-        if unicodedata.category(c) != 'Mn'
-    )
+    texto = ''.join(c for c in unicodedata.normalize('NFD', texto)
+                    if unicodedata.category(c) != 'Mn')
     texto = texto.translate(str.maketrans('', '', string.punctuation + ' '))
     return texto.lower()
 
-
-@app.route('/perfil')
-def perfil ():
-    return render_template('perfil.html')
-
-@app.route('/ir-perfil', methods=["GET", "POST"])
-def perfilGo():
-    return redirect(url_for('perfil'))
-
-
-
-
-
-
-
-def responder(mensagem):
+# Busca de resposta com fuzzy match
+def buscar_resposta(perguntas, mensagem):
     mensagem_norm = normalizar(mensagem)
-    tema_atual = session.get('tema_atual', None)
 
-    def buscar_resposta(perguntas):
-        for item in perguntas:
-            pergunta, resposta = item.split(":", 1)
-            pergunta_norm = normalizar(pergunta)
-            if pergunta_norm in mensagem_norm or mensagem_norm in pergunta_norm:
-                return resposta
-        perguntas_norm = [normalizar(p.split(":")[0]) for p in perguntas]
-        correspondencias = difflib.get_close_matches(mensagem_norm, perguntas_norm, n=1, cutoff=1.0)
-        if correspondencias:
-            pergunta_original = next(p for p in perguntas if normalizar(p.split(":")[0]) == correspondencias[0])
-            return pergunta_original.split(":")[1].strip()
-        return None
+    for item in perguntas:
+        pergunta, resposta = item.split(":", 1)
+        pergunta_norm = normalizar(pergunta)
 
-    # 1. Tenta com tema atual
-    if tema_atual:
-        resposta = buscar_resposta(qa_dict[tema_atual])
+        if pergunta_norm in mensagem_norm or mensagem_norm in pergunta_norm:
+            return resposta.strip()
+
+    perguntas_norm = [normalizar(p.split(":")[0]) for p in perguntas]
+    correspondencias = difflib.get_close_matches(mensagem_norm, perguntas_norm, n=1, cutoff=0.6)
+
+    if correspondencias:
+        pergunta_original = next(p for p in perguntas if normalizar(p.split(":")[0]) == correspondencias[0])
+        return pergunta_original.split(":")[1].strip()
+
+    return None
+
+# Fallback para API externa (OpenRouter com Nous)
+def buscar_resposta_gerada(mensagem):
+    url = "https://openrouter.ai/api/v1/chat/completions"
+    headers = {
+        "Authorization": "Bearer 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",  # Substitua pelo seu token real
+        "Content-Type": "application/json"
+    }
+
+    data = {
+        "model": "nousresearch/deephermes-3-mistral-24b-preview:free",  # Modelo correto
+        "messages": [{"role": "user", "content": mensagem}]
+    }
+
+    try:
+        response = requests.post(url, json=data, headers=headers)
+        resposta = response.json()
+
+        if response.status_code == 200:
+            return resposta['choices'][0]['message']['content']
+        else:
+            return f"Erro na requisição: {response.status_code} - {resposta.get('error', {}).get('message', '')}"
+    except Exception as e:
+        return f"Erro ao conectar com a API: {str(e)}"
+
+# Função principal de resposta
+def responder(mensagem):
+    tema_atual = session.get('tema_atual')
+    if tema_atual and tema_atual in qa_dict:
+        resposta = buscar_resposta(qa_dict[tema_atual], mensagem)
         if resposta:
-            return f"Olá {resposta}"
+            return resposta
 
-    # 2. Procura em outros temas
     for tema, perguntas in qa_dict.items():
-        resposta = buscar_resposta(perguntas)
+        resposta = buscar_resposta(perguntas, mensagem)
         if resposta:
             session['tema_atual'] = tema
             return resposta
 
-    # 3. Nenhuma resposta encontrada
-    return "Desculpe, não entendi isso. Pode reformular?"
+    return buscar_resposta_gerada(mensagem)
+# Rotas
+@app.route('/')
+def inicio():
+    return render_template('inicio.html')
+
+@app.route("/login", methods=["GET", "POST"])
+def login_view():
+    if request.method == "POST":
+        email = request.form.get("email")
+        senha = request.form.get("senha")
+
+        if not email or not senha:
+            return render_template("login.html", erro="Preencha todos os campos.")
+
+        user = Usuario.query.filter_by(email=email).first()
+        if not user or user.senha != senha:
+            return render_template("login.html", erro="Email ou senha incorretos.")
+
+        login_user(user)
+        session.pop('tema_atual', None)
+        return redirect(url_for("chat"))
+
+    return render_template("login.html")
+
+@app.route("/registrar", methods=["GET", "POST"])
+def registrar():
+    if request.method == "POST":
+        nome = request.form.get("nome")
+        email = request.form.get("email")
+        senha = request.form.get("senha")
+
+        if not nome or not email or not senha:
+            return render_template("registrar.html", erro="Todos os campos são obrigatórios.")
+
+        if Usuario.query.filter_by(email=email).first():
+            return render_template("registrar.html", erro="Email já cadastrado.")
+
+        novo_usuario = Usuario(nome=nome, email=email, senha=senha)
+        db.session.add(novo_usuario)
+        db.session.commit()
+
+        login_user(novo_usuario)
+        session.pop('tema_atual', None)
+        return redirect(url_for("chat"))
+
+    return render_template("registrar.html")
+
+@app.route("/logout", methods=["POST"])
+@login_required
+def logout():
+    logout_user()
+    session.pop('tema_atual', None)
+    return redirect(url_for("login_view"))
 
 @app.route("/chat", methods=["GET", "POST"])
 @login_required
@@ -111,92 +186,40 @@ def chat():
 
         return jsonify({"response": response})
 
-    # Método GET: carrega a interface
-    return render_template("index.html",
-        nome_usuario=current_user.nome,
-        email_usuario=current_user.email,
-        localizacao_usuario=getattr(current_user, "localizacao", "Não definida"))
+    return render_template("chat.html",
+                           nome_usuario=current_user.nome,
+                           email_usuario=current_user.email,
+                           localizacao_usuario=getattr(current_user, "localizacao", "Não definida"))
+
+@app.route('/perfil')
+@login_required
+def perfil():
+    return render_template('perfil.html',
+                           nome_usuario=current_user.nome,
+                           email_usuario=current_user.email,
+                           localizacao_usuario=getattr(current_user, "localizacao", "Não definida"))
+
+@app.route('/ir-perfil', methods=["GET", "POST"])
+def perfilGo():
+    return redirect(url_for('perfil'))
+
+@app.route('/voltar', methods=["GET", "POST"])
+def voltarPerfil():
+    return redirect(url_for('chat'))
 
 @app.route("/mensagens")
 @login_required
 def mensagens():
     mensagens = Mensagem.query.order_by(Mensagem.id.desc()).limit(10).all()
-    return jsonify([
-        {
-            "conteudo": m.conteudo,
-            "usuario_id": m.usuario_id,
-            "nome_usuario": m.usuario.nome
-        } for m in mensagens
-    ])
+    return jsonify([{
+        "conteudo": m.conteudo,
+        "usuario_id": m.usuario_id,
+        "nome_usuario": m.usuario.nome
+    } for m in mensagens])
 
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        email = request.form.get("email")
-        senha = request.form.get("senha")
-        
-        if not email or not senha:
-            return render_template("login.html", erro="Por favor, preencha ambos os campos.")
-
-        # Verifica se o usuário existe
-        user = Usuario.query.filter_by(email=email).first()
-
-        # Verifica se o usuário existe e a senha está correta
-        if not user or user.senha != senha:
-         return render_template("login.html", erro="Email ou senha incorretos.")
-
-
-        # Faz o login do usuário
-        login_user(user)
-
-        # Limpa qualquer variável de sessão
-        session.pop('tema_atual', None)
-
-        # Redireciona para a página "chat" após login bem-sucedido
-        return redirect(url_for("chat"))
-
-    return render_template("login.html")
-
-@app.route("/registrar", methods=["GET", "POST"])
-def registrar():
-    if request.method == "POST":
-        nome = request.form.get("nome")
-        email = request.form.get("email")
-        senha = request.form.get("senha")
-
-        # Verifica se todos os campos foram preenchidos
-        if not nome or not email or not senha:
-            return render_template("registrar.html", erro="Todos os campos são obrigatórios.")
-
-        # Verifica se o email já está cadastrado
-        if Usuario.query.filter_by(email=email).first():
-            return render_template("registrar.html", erro="Email já cadastrado.")
-
-        # Cria novo usuário
-        
-        novo_usuario = Usuario(nome=nome, email=email, senha=senha)
-        db.session.add(novo_usuario)
-        db.session.commit()
-
-        # Faz login automático
-        login_user(novo_usuario)
-        session.pop('tema_atual', None)
-
-        return redirect(url_for("chat"))
-
-    return render_template("registrar.html")
-@app.route('/voltar', methods=["GET", "POST"] )
-def voltar():
-    return redirect(url_for('chat'))
-
-@app.route("/logout", methods=["POST"])
-@login_required
-def logout():
-    logout_user()
-    session.pop('tema_atual', None)
-    return redirect(url_for("login"))
-
+# Inicialização
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     app.run(debug=True, host="0.0.0.0")
+9

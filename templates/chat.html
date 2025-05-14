@@ -1,0 +1,483 @@
+  <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chat NeuraBot</title>
+    <style>
+        :root {
+        color-scheme: dark;
+        }
+
+        * {
+        box-sizing: border-box;
+        }
+
+        html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    color: #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+
+    
+    background: linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.9)),
+                url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    }
+
+
+        header {
+        padding: 1.2rem 2rem;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #cbd5e1;
+        border-bottom: 1px solid #1e293b;
+        background-color: #0f172a;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        position: relative;
+        z-index: 4;
+        }
+
+        header .icon {
+        font-size: 1.8rem;
+        }
+
+        #profile-pic {
+        margin-left: auto;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #334155;
+        }
+
+        #toggle-sidebar {
+        background: none;
+        border: none;
+        color: #cbd5e1;
+        font-size: 1.5rem;
+        cursor: pointer;
+        margin-right: 0.75rem;
+        }
+
+        #starfield {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    background: black;
+    }
+
+
+        #sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 220px;
+        height: 100%;
+        background-color: rgba(15, 23, 42, 0.6);
+        color: #cbd5e1;
+        padding: 1rem;
+        border-right: 1px solid #1e293b;
+        z-index: 3;
+        backdrop-filter: blur(6px);
+        transition: transform 0.3s ease;
+        transform: translateX(-100%);
+        }
+
+        #sidebar:not(.hidden) {
+        transform: translateX(0);
+        }
+
+        #sidebar h2 {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+        }
+
+        #sidebar ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        }
+
+        #sidebar li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #334155;
+        cursor: pointer;
+        }
+
+        #sidebar li:hover {
+        background-color: rgba(30, 41, 59, 0.6);
+        }
+
+        #chat-container {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem 2rem;
+        overflow: hidden;
+        position: relative;
+        z-index: 2;
+        margin-left: 0;
+        transition: margin-left 0.3s ease;
+        }
+
+        #chat-container.with-sidebar {
+        margin-left: 220px;
+        }
+
+        #chat-messages {
+        flex-grow: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        scroll-behavior: smooth;
+        }
+
+        .message {
+        position: relative;
+        max-width: 640px;
+        padding: 1rem 1.25rem;
+        border-radius: 0.75rem;
+        font-size: 1rem;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        }
+
+        .message.ai {
+        align-self: flex-start;
+        background-color: #1e293b;
+        color: #dbeafe;
+        }
+
+        .message.user {
+        align-self: flex-end;
+        background-color: #2563eb;
+        color: #ffffff;
+        }
+
+        .message .timestamp {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        margin-top: 0.4rem;
+        }
+
+        .message:hover .actions {
+        opacity: 1;
+        pointer-events: auto;
+        }
+
+        .actions {
+        position: absolute;
+        bottom: -1.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 0.4rem;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+        }
+
+        .actions button {
+        background: none;
+        border: none;
+        color: #94a3b8;
+        cursor: pointer;
+        font-size: 1rem;
+        padding: 0.2rem;
+        transition: color 0.2s;
+        }
+
+        .actions button:hover {
+        color: #e2e8f0;
+        }
+
+        #input-area {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding-top: 0.5rem;
+        }
+
+        #input-area input {
+        flex-grow: 1;
+        padding: 0.75rem;
+        font-size: 1rem;
+        border-radius: 0.375rem;
+        border: 1px solid #334155;
+        background-color: #0f172a;
+        color: #e5e7eb;
+        }
+
+        #input-area button {
+        background-color: #2563eb;
+        color: #ffffff;
+        padding: 0.75rem 1rem;
+        border-radius: 0.375rem;
+        border: none;
+        cursor: pointer;
+        }
+
+        #input-area button:hover {
+        background-color: #1d4ed8;
+        }
+
+        .profile-button {
+        border-radius: 2rem;
+        max-width: 60px;
+        }
+
+        .foto-perfil img {
+        border-radius: 2rem;
+        max-width: 50px;
+        max-height: 70px;
+        margin-left: auto;
+        }
+
+        .foto-perfil img:hover {
+        cursor: pointer;
+        }
+
+        .foto-perfil1 {
+        max-width: 100px;
+        max-height: 100px;
+        border-radius: 2rem;
+        margin-top: 50px;
+        }
+
+        .user-input {
+        margin-left: auto;
+        margin-right: auto;
+        }
+
+        @media (max-width: 768px) {
+        header {
+            padding: 1rem 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        #toggle-sidebar {
+            font-size: 1.3rem;
+        }
+
+        #sidebar {
+            width: 200px;
+        }
+
+        #chat-container.with-sidebar {
+            margin-left: 0;
+        }
+
+        #input-area {
+            flex-direction: column;
+            padding-top: 0.25rem;
+        }
+
+        #input-area input {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        #input-area button {
+            width: 100%;
+        }
+
+        .foto-perfil1 {
+            max-width: 80px;
+            max-height: 80px;
+        }
+
+        .user-input {
+            margin-left: 0;
+            margin-right: 0;
+        }
+        }
+
+        @media (max-width: 480px) {
+        header {
+            font-size: 1rem;
+            padding: 1rem 1.25rem;
+        }
+
+        #toggle-sidebar {
+            font-size: 1.2rem;
+        }
+
+        #sidebar {
+            width: 200px;
+            padding: 0.5rem;
+        }
+
+        #chat-container {
+            padding: 1rem;
+        }
+
+        #input-area input {
+            padding: 0.5rem;
+        }
+
+        .foto-perfil1 {
+            max-width: 70px;
+            max-height: 70px;
+        }
+
+        #sidebar ul li {
+            font-size: 0.9rem;
+        }
+
+        .message {
+            padding: 0.75rem 1rem;
+        }
+        }
+    </style>
+    </head>
+
+    <body>
+        <canvas id="starfield"></canvas>
+    <header>
+        <button id="toggle-sidebar" aria-label="Abrir menu lateral">☰</button>
+        <span>NeuraBot</span>
+        <form action="/perfil" style="margin-left:auto;">
+        <button type="submit" class="profile-button">
+            <img src="https://img.freepik.com/psd-gratuitas/ilustracao-3d-de-uma-pessoa-com-oculos-de-sol_23-2149436188.jpg" alt="Profile" id="profile-pic" />
+        </button>
+        </form>
+    </header>
+
+    <div id="sidebar" class="hidden">
+        <h2>Perfil</h2>
+        <ul>
+        <img class="foto-perfil1" src="https://img.freepik.com/psd-gratuitas/ilustracao-3d-de-uma-pessoa-com-oculos-de-sol_23-2149436188.jpg" alt="">
+        <li>Configurações</li>
+        <form action="{{ url_for('logout') }}" method="post" style="display:inline;">
+    <button type="submit">Sair</button>
+</form>
+        </ul>
+    </div>
+
+    <div id="chat-container" class="with-sidebar">
+        <div id="chat-messages">
+        <!-- Mensagens do chat -->
+        </div>
+
+        <div id="input-area">
+        <input class="user-input" type="text" id="user-input" placeholder="Digite sua mensagem..." />
+        <button id="send-btn">Enviar</button>
+        </div>
+    </div>
+
+    <script>
+
+        const canvas = document.getElementById("starfield");
+    const ctx = canvas.getContext("2d");
+    let stars = [];
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    function createStars(count) {
+        stars = [];
+        for (let i = 0; i < count; i++) {
+        stars.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            radius: Math.random() * 1.5,
+            velocity: Math.random() * 0.5 + 0.2
+        });
+        }
+    }
+
+    function drawStars() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "white";
+        for (let star of stars) {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, 2 * Math.PI);
+        ctx.fill();
+        star.y += star.velocity;
+        if (star.y > canvas.height) {
+            star.y = 0;
+            star.x = Math.random() * canvas.width;
+        }
+        }
+        requestAnimationFrame(drawStars);
+    }
+
+    createStars(150);
+    drawStars();
+        function appendMessage(message, isUser = false) {
+        const chatMessages = document.getElementById("chat-messages");
+        const messageDiv = document.createElement("div");
+        messageDiv.classList.add("message", isUser ? "user" : "ai");
+
+        const content = document.createElement("div");
+        content.textContent = isUser ? message : "Chat: " + message;
+
+        const timestamp = document.createElement("div");
+        timestamp.classList.add("timestamp");
+        timestamp.textContent = new Date().toLocaleTimeString();
+
+        messageDiv.appendChild(content);
+        messageDiv.appendChild(timestamp);
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function sendMessage() {
+        const input = document.getElementById("user-input");
+        const userInput = input.value.trim();
+        if (!userInput) return;
+
+        appendMessage(userInput, true);
+        input.value = "";
+
+        fetch("/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: userInput })
+        })
+        .then(response => response.json())
+        .then(data => {
+            appendMessage(data.response || "Resposta vazia do bot.");
+        })
+        .catch(error => {
+            appendMessage("Erro ao se comunicar com o servidor.");
+            console.error("Erro:", error);
+        });
+        }
+
+        const toggleBtn = document.getElementById("toggle-sidebar");
+        const sidebar = document.getElementById("sidebar");
+        const chatContainer = document.getElementById("chat-container");
+
+        toggleBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("hidden");
+        chatContainer.classList.toggle("with-sidebar");
+        });
+
+        document.getElementById("send-btn").addEventListener("click", sendMessage);
+        document.getElementById("user-input").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") sendMessage();
+        });
+    </script>
+    </body>
+    </html>
