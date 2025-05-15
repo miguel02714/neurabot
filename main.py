@@ -85,7 +85,7 @@ def buscar_resposta(perguntas, mensagem):
 def buscar_resposta_gerada(mensagem):
     url = "https://openrouter.ai/api/v1/chat/completions"
     headers = {
-        "Authorization": "Bearer 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",
+        "Authorization": "Bearer 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",
         "Content-Type": "application/json"
     }
 
