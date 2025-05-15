@@ -35,6 +35,11 @@ def user_loader(id):
 def irlogin():
     return redirect(url_for('login_view'))
 
+@app.route('/')
+def 404():
+    return render_template('404.html')
+
+
 @app.route('/registrar-conta', methods=["GET", "POST"])
 def registrarconta():
     return redirect(url_for("Registrar"))
