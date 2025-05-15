@@ -42,7 +42,7 @@ def 404():
 
 @app.route('/registrar-conta', methods=["GET", "POST"])
 def registrarconta():
-    return redirect(url_for("Registrar"))
+    return redirect(url_for("registrar"))
 
 
 
