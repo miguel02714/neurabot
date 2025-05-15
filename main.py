@@ -37,7 +37,7 @@ def irlogin():
 
 @app.route('/registrar-conta', methods=["GET", "POST"])
 def registrarconta():
-    return redirect(url_for('registrar'))
+    return redirect(url_for("Registrar"))
 
 
 
@@ -85,12 +85,12 @@ def buscar_resposta(perguntas, mensagem):
 def buscar_resposta_gerada(mensagem):
     url = "https://openrouter.ai/api/v1/chat/completions"
     headers = {
-        "Authorization": "Bearer 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",  # Substitua pelo seu token real
+        "Authorization": "Bearer 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",
         "Content-Type": "application/json"
     }
 
     data = {
-        "model": "nousresearch/deephermes-3-mistral-24b-preview:free",  # Modelo correto
+        "model": "nousresearch/deephermes-3-mistral-24b-preview:free",
         "messages": [{"role": "user", "content": mensagem}]
     }
 
@@ -99,9 +99,15 @@ def buscar_resposta_gerada(mensagem):
         resposta = response.json()
 
         if response.status_code == 200:
-            return resposta['choices'][0]['message']['content']
+            if 'choices' in resposta and resposta['choices']:
+                return resposta['choices'][0]['message']['content']
+            else:
+                print("Resposta inesperada:", resposta)
+                return "Erro: Resposta inesperada da API (sem 'choices')."
         else:
+            print("Resposta de erro:", resposta)
             return f"Erro na requisição: {response.status_code} - {resposta.get('error', {}).get('message', '')}"
+
     except Exception as e:
         return f"Erro ao conectar com a API: {str(e)}"
 
