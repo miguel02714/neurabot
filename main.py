@@ -31,14 +31,13 @@ def user_loader(id):
     return Usuario.query.get(int(id))
 
 
+
+
+
+
 @app.route('/ir-login', methods=["GET", "POST"])
 def irlogin():
     return redirect(url_for('login_view'))
-
-@app.route('/')
-def 404():
-    return render_template('404.html')
-
 
 @app.route('/registrar-conta', methods=["GET", "POST"])
 def registrarconta():
@@ -90,12 +89,12 @@ def buscar_resposta(perguntas, mensagem):
 def buscar_resposta_gerada(mensagem):
     url = "https://openrouter.ai/api/v1/chat/completions"
     headers = {
-        "Authorization": "Bearer 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",
+        "Authorization": "Bearer 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",
         "Content-Type": "application/json"
     }
 
     data = {
-        "model": "nousresearch/deephermes-3-mistral-24b-preview:free",
+        "model": "qwen/qwen3-30b-a3b:free",
         "messages": [{"role": "user", "content": mensagem}]
     }
 
@@ -135,6 +134,17 @@ def responder(mensagem):
 @app.route('/')
 def inicio():
     return render_template('inicio.html')
+
+
+@app.route('/notfund')
+def notfund():
+    return render_template('404.html')
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return redirect(url_for('notfund'))
+
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login_view():
@@ -235,4 +245,3 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     app.run(debug=True, host="0.0.0.0")
-9
