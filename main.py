@@ -78,6 +78,7 @@ def buscar_resposta(perguntas, mensagem):
     return None
 
 # Fallback com IA externa (OpenRouter)
+
 def buscar_resposta_gerada(mensagem):
     url = "https://openrouter.ai/api/v1/chat/completions"
     api_key = os.getenv("OPENROUTER_API_KEY")
@@ -91,6 +92,7 @@ def buscar_resposta_gerada(mensagem):
         "Content-Type": "application/json",
         "X-Title": "MeuAppAI"
     }
+    
 
     data = {
         "model": "qwen/qwen3-4b:free",
