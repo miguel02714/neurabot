@@ -85,7 +85,7 @@ def buscar_resposta_gerada(mensagem):
 
     
     headers = {
-        "Authorization": f"Bearer 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",
+        "Authorization": f"Bearer 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",
         "Content-Type": "application/json",
         "X-Title": "MeuAppAI"
     }
