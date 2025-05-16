@@ -6,11 +6,14 @@ import unicodedata
 import string
 import requests
 import json
-from models import Usuario, Mensagem
+from models import Usuario, Mensagem, QA
 from db import db
+
 import os
 from dotenv import load_dotenv
 load_dotenv()
+
+# FAQ por tema
 from faq import (
     apresentacao, funcionalidade, encerramento,
     curiosidades_gerais, ciencia_e_historia, geografia_e_linguas,
@@ -25,7 +28,7 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
 
-# Login Manager
+# Flask-Login
 lm = LoginManager(app)
 lm.login_view = 'login_view'
 
@@ -33,22 +36,7 @@ lm.login_view = 'login_view'
 def user_loader(id):
     return Usuario.query.get(int(id))
 
-
-
-
-
-
-@app.route('/ir-login', methods=["GET", "POST"])
-def irlogin():
-    return redirect(url_for('login_view'))
-
-@app.route('/registrar-conta', methods=["GET", "POST"])
-def registrarconta():
-    return redirect(url_for("registrar"))
-
-
-
-# Dicionário QA
+# Dicionário de FAQ por tema
 qa_dict = {
     "apresentacao": apresentacao,
     "funcionalidade": funcionalidade,
@@ -68,17 +56,18 @@ def normalizar(texto):
     texto = texto.translate(str.maketrans('', '', string.punctuation + ' '))
     return texto.lower()
 
-# Busca de resposta com fuzzy match
+# Busca em FAQ
 def buscar_resposta(perguntas, mensagem):
     mensagem_norm = normalizar(mensagem)
 
+    # Busca exata
     for item in perguntas:
         pergunta, resposta = item.split(":", 1)
         pergunta_norm = normalizar(pergunta)
-
         if pergunta_norm in mensagem_norm or mensagem_norm in pergunta_norm:
             return resposta.strip()
 
+    # Busca fuzzy
     perguntas_norm = [normalizar(p.split(":")[0]) for p in perguntas]
     correspondencias = difflib.get_close_matches(mensagem_norm, perguntas_norm, n=1, cutoff=0.6)
 
@@ -88,7 +77,7 @@ def buscar_resposta(perguntas, mensagem):
 
     return None
 
-# Fallback para API externa (OpenRouter com Nous)
+# Fallback com IA externa (OpenRouter)
 def buscar_resposta_gerada(mensagem):
     url = "https://openrouter.ai/api/v1/chat/completions"
     api_key = os.getenv("OPENROUTER_API_KEY")
@@ -98,10 +87,8 @@ def buscar_resposta_gerada(mensagem):
         return "Erro: chave de API não configurada no servidor. Por favor, contate o administrador."
 
     headers = {
-        "Authorization": "Bearer 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",
-
+        "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
-        
         "X-Title": "MeuAppAI"
     }
 
@@ -118,35 +105,44 @@ def buscar_resposta_gerada(mensagem):
             if 'choices' in resposta and resposta['choices']:
                 return resposta['choices'][0]['message']['content']
             else:
-                print("⚠️ Resposta inesperada da API:", resposta)
-                return "Erro: Resposta inesperada da IA (sem conteúdo válido)."
+                return "Erro: Resposta inesperada da IA."
         else:
-            print(f"❌ Erro da API [{response.status_code}]:", resposta)
-            return f"Erro ao consultar IA: {resposta.get('error', {}).get('message', 'Erro desconhecido')}"
+            return f"Erro: {resposta.get('error', {}).get('message', 'Desconhecido')}"
 
     except Exception as e:
-        print("❌ Exceção ao chamar a API:", str(e))
-        return "Erro ao tentar se comunicar com a IA externa."
+        return f"Erro ao tentar se comunicar com a IA externa: {str(e)}"
+
 # Função principal de resposta
 def responder(mensagem):
     tema_atual = session.get('tema_atual')
+
+    # 1. FAQ
     if tema_atual and tema_atual in qa_dict:
         resposta = buscar_resposta(qa_dict[tema_atual], mensagem)
         if resposta:
             return resposta
 
-    for tema, perguntas in qa_dict.items():
-        resposta = buscar_resposta(perguntas, mensagem)
-        if resposta:
-            session['tema_atual'] = tema
-            return resposta
+    # 2. Banco QA
+    qa = QA.query.all()
+    perguntas_banco = [f"{item.pergunta}:{item.resposta}" for item in qa]
+    resposta = buscar_resposta(perguntas_banco, mensagem)
+    if resposta:
+        return resposta
 
-    return buscar_resposta_gerada(mensagem)
+    # 3. Fallback IA
+    resposta_gerada = buscar_resposta_gerada(mensagem)
+
+    # Salva no banco
+    nova_qa = QA(pergunta=mensagem, resposta=resposta_gerada)
+    db.session.add(nova_qa)
+    db.session.commit()
+
+    return resposta_gerada
+
 # Rotas
 @app.route('/')
 def inicio():
     return render_template('inicio.html')
-
 
 @app.route('/notfund')
 def notfund():
@@ -155,8 +151,6 @@ def notfund():
 @app.errorhandler(404)
 def page_not_found(e):
     return redirect(url_for('notfund'))
-
-
 
 @app.route("/login", methods=["GET", "POST"])
 def login_view():
@@ -168,7 +162,7 @@ def login_view():
             return render_template("login.html", erro="Preencha todos os campos.")
 
         user = Usuario.query.filter_by(email=email).first()
-        if not user or user.senha != senha:
+        if not user or not check_password_hash(user.senha, senha):
             return render_template("login.html", erro="Email ou senha incorretos.")
 
         login_user(user)
@@ -190,7 +184,8 @@ def registrar():
         if Usuario.query.filter_by(email=email).first():
             return render_template("registrar.html", erro="Email já cadastrado.")
 
-        novo_usuario = Usuario(nome=nome, email=email, senha=senha)
+        senha_hash = generate_password_hash(senha)
+        novo_usuario = Usuario(nome=nome, email=email, senha=senha_hash)
         db.session.add(novo_usuario)
         db.session.commit()
 
@@ -252,7 +247,7 @@ def mensagens():
         "nome_usuario": m.usuario.nome
     } for m in mensagens])
 
-# Inicialização
+# Execução
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
