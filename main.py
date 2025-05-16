@@ -5,7 +5,7 @@ import difflib
 import unicodedata
 import string
 import requests
-
+import json
 from models import Usuario, Mensagem
 from db import db
 from faq import (
@@ -89,17 +89,19 @@ def buscar_resposta(perguntas, mensagem):
 def buscar_resposta_gerada(mensagem):
     url = "https://openrouter.ai/api/v1/chat/completions"
     headers = {
-        "Authorization": "Bearer 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",
-        "Content-Type": "application/json"
+        "Authorization": "Bearer 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",
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://seudominio.com",  # Opcional: troque pelo seu site real
+        "X-Title": "Seu Projeto"                  # Opcional: nome do seu projeto
     }
 
     data = {
-        "model": "qwen/qwen3-30b-a3b:free",
+        "model": "qwen/qwen3-4b:free",
         "messages": [{"role": "user", "content": mensagem}]
     }
 
     try:
-        response = requests.post(url, json=data, headers=headers)
+        response = requests.post(url, headers=headers, data=json.dumps(data))
         resposta = response.json()
 
         if response.status_code == 200:
