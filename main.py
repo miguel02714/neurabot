@@ -8,6 +8,9 @@ import requests
 import json
 from models import Usuario, Mensagem
 from db import db
+import os
+from dotenv import load_dotenv
+load_dotenv()
 from faq import (
     apresentacao, funcionalidade, encerramento,
     curiosidades_gerais, ciencia_e_historia, geografia_e_linguas,
@@ -88,11 +91,18 @@ def buscar_resposta(perguntas, mensagem):
 # Fallback para API externa (OpenRouter com Nous)
 def buscar_resposta_gerada(mensagem):
     url = "https://openrouter.ai/api/v1/chat/completions"
+    api_key = os.getenv("OPENROUTER_API_KEY")
+
+    if not api_key:
+        print("❌ ERRO: OPENROUTER_API_KEY não está configurada.")
+        return "Erro: chave de API não configurada no servidor. Por favor, contate o administrador."
+
     headers = {
-        "Authorization": "Bearer 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",
+        "Authorization": "Bearer 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",
+
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://seudominio.com",  # Opcional: troque pelo seu site real
-        "X-Title": "Seu Projeto"                  # Opcional: nome do seu projeto
+        
+        "X-Title": "MeuAppAI"
     }
 
     data = {
@@ -108,15 +118,15 @@ def buscar_resposta_gerada(mensagem):
             if 'choices' in resposta and resposta['choices']:
                 return resposta['choices'][0]['message']['content']
             else:
-                print("Resposta inesperada:", resposta)
-                return "Erro: Resposta inesperada da API (sem 'choices')."
+                print("⚠️ Resposta inesperada da API:", resposta)
+                return "Erro: Resposta inesperada da IA (sem conteúdo válido)."
         else:
-            print("Resposta de erro:", resposta)
-            return f"Erro na requisição: {response.status_code} - {resposta.get('error', {}).get('message', '')}"
+            print(f"❌ Erro da API [{response.status_code}]:", resposta)
+            return f"Erro ao consultar IA: {resposta.get('error', {}).get('message', 'Erro desconhecido')}"
 
     except Exception as e:
-        return f"Erro ao conectar com a API: {str(e)}"
-
+        print("❌ Exceção ao chamar a API:", str(e))
+        return "Erro ao tentar se comunicar com a IA externa."
 # Função principal de resposta
 def responder(mensagem):
     tema_atual = session.get('tema_atual')
