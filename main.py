@@ -81,21 +81,18 @@ def buscar_resposta(perguntas, mensagem):
 
 def buscar_resposta_gerada(mensagem):
     url = "https://openrouter.ai/api/v1/chat/completions"
-    api_key = os.getenv("OPENROUTER_API_KEY")
+    
 
-    if not api_key:
-        print("❌ ERRO: OPENROUTER_API_KEY não está configurada.")
-        return "Erro: chave de API não configurada no servidor. Por favor, contate o administrador."
-
+    
     headers = {
-        "Authorization": f"Bearer {api_key}",
+        "Authorization": f"Bearer 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",
         "Content-Type": "application/json",
         "X-Title": "MeuAppAI"
     }
     
 
     data = {
-        "model": "qwen/qwen3-4b:free",
+        "model": "deepseek/deepseek-chat-v3-0324:free",
         "messages": [{"role": "user", "content": mensagem}]
     }
 
@@ -123,13 +120,6 @@ def responder(mensagem):
         resposta = buscar_resposta(qa_dict[tema_atual], mensagem)
         if resposta:
             return resposta
-
-    # 2. Banco QA
-    qa = QA.query.all()
-    perguntas_banco = [f"{item.pergunta}:{item.resposta}" for item in qa]
-    resposta = buscar_resposta(perguntas_banco, mensagem)
-    if resposta:
-        return resposta
 
     # 3. Fallback IA
     resposta_gerada = buscar_resposta_gerada(mensagem)
