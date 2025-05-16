@@ -4,10 +4,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import difflib
 import unicodedata
 import string
-import requests
-import json
 from models import Usuario, Mensagem, QA
 from db import db
+import cohere
 
 import os
 from dotenv import load_dotenv
@@ -77,37 +76,18 @@ def buscar_resposta(perguntas, mensagem):
 
     return None
 
-# Fallback com IA externa (OpenRouter)
+# Inicialize o cliente Cohere com sua API Key (preferencialmente armazenada em .env)
+co = cohere.Client('VnAKRl6kF5ksOAEvhQWwuDI5XMwyWEVIdpEX6Krl')
 
 def buscar_resposta_gerada(mensagem):
-    url = "https://openrouter.ai/api/v1/chat/completions"
-    
-
-    
-    headers = {
-        "Authorization": f"Bearer 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",
-        "Content-Type": "application/json",
-        "X-Title": "MeuAppAI"
-    }
-    
-
-    data = {
-        "model": "deepseek/deepseek-chat-v3-0324:free",
-        "messages": [{"role": "user", "content": mensagem}]
-    }
-
     try:
-        response = requests.post(url, headers=headers, data=json.dumps(data))
-        resposta = response.json()
-
-        if response.status_code == 200:
-            if 'choices' in resposta and resposta['choices']:
-                return resposta['choices'][0]['message']['content']
-            else:
-                return "Erro: Resposta inesperada da IA."
-        else:
-            return f"Erro: {resposta.get('error', {}).get('message', 'Desconhecido')}"
-
+        response = co.chat(
+            model='command-r-plus',  # use um modelo que suporte chat
+            message=mensagem,
+            max_tokens=150,
+            temperature=0.7
+        )
+        return response.text.strip()
     except Exception as e:
         return f"Erro ao tentar se comunicar com a IA externa: {str(e)}"
 
@@ -121,7 +101,7 @@ def responder(mensagem):
         if resposta:
             return resposta
 
-    # 3. Fallback IA
+    # 2. Fallback IA (Cohere Chat)
     resposta_gerada = buscar_resposta_gerada(mensagem)
 
     # Salva no banco
