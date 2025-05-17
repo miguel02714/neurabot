@@ -50,45 +50,7 @@ qa_dict = {
     "tecnologia_e_redes_sociais": tecnologia_e_redes_sociais
 }
 
-# Geração de imagem com Freepik
-def analisar_imagem_openrouter(url_imagem):
-    headers = {
-        "Authorization": f"Bearer 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",  # coloque sua chave no .env
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://seudominio.com",  # Opcional, personalize
-        "X-Title": "NomeDoSeuApp",  # Opcional, personalize
-    }
-
-    data = {
-        "model": "qwen/qwen2.5-vl-3b-instruct:free",
-        "messages": [
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": "Descreva o que está nesta imagem em português."
-                    },
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": url_imagem
-                        }
-                    }
-                ]
-            }
-        ]
-    }
-
-    try:
-        response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=data)
-        response.raise_for_status()
-        resultado = response.json()
-        return resultado["choices"][0]["message"]["content"]
-    except Exception as e:
-        return f"Erro ao analisar imagem com OpenRouter: {str(e)}"
-
-# Função para limpar texto
+# Função para normalizar texto
 def normalizar(texto):
     texto = ''.join(c for c in unicodedata.normalize('NFD', texto) if unicodedata.category(c) != 'Mn')
     texto = texto.translate(str.maketrans('', '', string.punctuation + ' '))
@@ -123,23 +85,38 @@ def buscar_resposta_gerada(mensagem):
     except Exception as e:
         return f"Erro ao tentar se comunicar com a IA externa: {str(e)}"
 
-# Lógica de resposta combinada
+# Lógica combinada de resposta
 def responder(mensagem):
+    # Comando para gerar imagem
+    if mensagem.lower().startswith("gerar imagem:"):
+        prompt = mensagem[len("gerar imagem:"):].strip()
+        return gerar_imagem_freepik(prompt)  # Certifique-se de implementar essa função
+
     tema_atual = session.get('tema_atual')
+
+    # 1. Busca em FAQ do tema atual (se estiver definido)
     if tema_atual and tema_atual in qa_dict:
         resposta = buscar_resposta(qa_dict[tema_atual], mensagem)
         if resposta:
             return resposta
-    if mensagem.lower().startswith("gerar imagem:"):
-        prompt = mensagem[len("gerar imagem:"):].strip()
-        return gerar_imagem_freepik(prompt)
+
+    # 2. Busca em todos os temas disponíveis (não só "geral")
+    for tema, perguntas in qa_dict.items():
+        resposta = buscar_resposta(perguntas, mensagem)
+        if resposta:
+            return resposta
+
+    # 3. Se não encontrou em nenhum FAQ, gera com IA
     resposta_gerada = buscar_resposta_gerada(mensagem)
+
+    # 4. Salva no banco
     nova_qa = QA(pergunta=mensagem, resposta=resposta_gerada)
     db.session.add(nova_qa)
     db.session.commit()
+
     return resposta_gerada
 
-# Rotas
+# Rotas principais
 @app.route('/')
 def inicio():
     return render_template('inicio.html')

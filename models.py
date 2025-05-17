@@ -17,11 +17,13 @@ class Usuario(db.Model, UserMixin):
     def get_id(self):
         return str(self.id)
 
+
 class QA(db.Model):
     __tablename__ = 'qa'
     id = db.Column(db.Integer, primary_key=True)
     pergunta = db.Column(db.String(200), nullable=False)
     resposta = db.Column(db.String(200), nullable=False)
+
 
 class Mensagem(db.Model):
     __tablename__ = 'mensagens'
