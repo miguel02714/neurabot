@@ -95,19 +95,20 @@ def buscar_resposta_gerada(mensagem):
 def responder(mensagem):
     tema_atual = session.get('tema_atual')
 
-    # 1. FAQ
+    # 1. Busca no FAQ
     if tema_atual and tema_atual in qa_dict:
         resposta = buscar_resposta(qa_dict[tema_atual], mensagem)
         if resposta:
             return resposta
 
-    # 2. Fallback IA
+    # 2. Busca na IA Externa
     resposta_gerada = buscar_resposta_gerada(mensagem)
 
-    # Salvar no banco
-    nova_qa = QA(pergunta=mensagem, resposta=resposta_gerada)
-    db.session.add(nova_qa)
-    db.session.commit()
+    # 3. Salva no Banco de Dados (evita duplicatas)
+    if not QA.query.filter_by(pergunta=mensagem).first():
+        nova_qa = QA(pergunta=mensagem, resposta=resposta_gerada)
+        db.session.add(nova_qa)
+        db.session.commit()
 
     return resposta_gerada
 
