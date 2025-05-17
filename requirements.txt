@@ -4,3 +4,4 @@ Werkzeug==2.3.7
 SQLAlchemy==2.0.29
 python-dotenv==1.0.1
 cohere==4.44
+gunicorn==21.2.0
