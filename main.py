@@ -209,6 +209,15 @@ def perfilGo():
 def voltarPerfil():
     return redirect(url_for('chat'))
 
+@app.route('/registrar-conta', methods=["GET", "POST"])
+def registrarconta():
+    return redirect(url_for('registrar'))
+
+@app.route('/ir-login', methods=["GET", "POST"])
+def irlogin():
+    return redirect(url_for('login_view'))
+
+
 @app.route("/mensagens")
 @login_required
 def mensagens():
