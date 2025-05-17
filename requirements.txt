@@ -1,7 +1,8 @@
 Flask==2.3.3
 Flask-Login==0.6.3
+Flask-SQLAlchemy==3.1.1
 Werkzeug==2.3.7
-SQLAlchemy==2.0.29
+requests==2.31.0
 python-dotenv==1.0.1
-cohere==4.44
 gunicorn==21.2.0
+cohere==4.44
