@@ -5,178 +5,213 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>NEURA BOT</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+   * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    html, body {
-      height: 100%;
-      font-family: 'Segoe UI', sans-serif;
-      color: white;
-      background-color: #000;
-      overflow: hidden;
-    }
+html, body {
+  height: 100%;
+  font-family: 'Segoe UI', sans-serif;
+  color: white;
+  background-color: #000;
+  overflow: hidden;
+}
 
-    #vanta-bg {
-      width: 100%;
-      height: 100vh;
-      position: relative;
-      padding: 40px 60px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
+#vanta-bg {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 
-    .neura {
-      font-weight: 900;
-      font-size: 32px;
-      position: absolute;
-      top: 30px;
-      left: 40px;
-      z-index: 2;
-    }
+.neura {
+  font-weight: 900;
+  font-size: 28px;
+  position: absolute;
+  top: 16px;
+  left: 20px;
+  z-index: 2;
+}
 
-    .buttons {
-      position: absolute;
-      top: 30px;
-      right: 40px;
-      z-index: 2;
-      display: flex;
-      gap: 16px;
-    }
+.buttons {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 
-    .buttons button {
-      padding: 14px 32px;
-      font-size: 1.1rem;
-      background: linear-gradient(135deg, #00d2ff, #3a7bd5);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: bold;
-      letter-spacing: 0.8px;
-      box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
-      
-      transition: all 0.3s ease-in-out;
-      position: relative;
-      overflow: hidden;
-    }
+.buttons button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  letter-spacing: 0.6px;
+  box-shadow: 0 4px 14px rgba(0, 123, 255, 0.4);
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  overflow: hidden;
+}
 
-    .buttons button::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: -75%;
-      width: 200%;
-      height: 100%;
-      background: rgba(255, 255, 255, 0.1);
-      transform: skewX(-20deg);
-      transition: left 0.6s ease;
-    }
+.buttons button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 200%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+}
 
-    .buttons button:hover::before {
-      left: 125%;
-    }
+.buttons button:hover::before {
+  left: 125%;
+}
 
-    .buttons button:hover {
-      transform: translateY(-3px) scale(1.03);
-      box-shadow: 0 8px 24px rgba(0, 123, 255, 0.5);
-    }
+.buttons button:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 18px rgba(0, 123, 255, 0.5);
+}
 
-    .buttons button:active {
-      transform: scale(0.98);
-    }
+.buttons button:active {
+  transform: scale(0.96);
+}
 
-    .content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 60px;
-      z-index: 1;
-      animation: fadeIn 1.5s ease-in-out forwards;
-      
- 
-    }
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 24px;
+  z-index: 1;
+  animation: fadeIn 1.5s ease-in-out forwards;
+  margin-top: 80px;
+}
 
-    .text-box {
-      max-width: 600px;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 12px;
-      padding: 30px;
-      box-shadow: 5px 8px 32px rgba(0, 0, 0, 0.6);
-    }
+.text-box {
+  width: 100%;
+  max-width: 360px;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 3px 6px 24px rgba(0, 0, 0, 0.5);
+}
 
-    .text-box h1 {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-      text-shadow: 1px 1px 10px rgba(0, 0, 0, 0.6);
-    }
+.text-box h1 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.6);
+}
 
-    .text-box p {
-      font-size: 1.25rem;
-      line-height: 1.6;
-    }
+.text-box p {
+  font-size: 1rem;
+  line-height: 1.5;
+}
 
-    .model3d {
-      width: 500px;
-      height: 500px;
-      animation: fadeIn 2s ease-in-out 0.5s forwards;
-    }
+.model3d {
+  width: 100%;
+  max-width: 300px;
+  height: 280px;
+  animation: fadeIn 2s ease-in-out 0.5s forwards;
+}
 
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-    @media (max-width: 768px) {
-      #vanta-bg {
-        padding: 20px;
-      }
+/* Responsivo para dispositivos maiores (tablet ou mais) */
+@media (max-width: 768px) {
+  #vanta-bg {
+    padding: 20px;
+  }
 
-      .content {
-        flex-direction: column;
-        text-align: center;
-      }
+  .buttons {
+    flex-direction: row;
+    top: 15px;
+    right: 15px;
+    gap: 10px;
+  }
 
-      .text-box h1 {
-        font-size: 2rem;
-      }
+  .buttons button {
+    padding: 8px 16px;
+    font-size: 0.75rem;
+    background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 14px rgba(0, 123, 255, 0.3);
+    transition: all 0.25s ease-in-out;
+    position: relative;
+    overflow: hidden;
+  }
 
-      .text-box p {
-        font-size: 1rem;
-      }
+  .neura {
+    font-size: 20px;
+    top: 15px;
+    left: 15px;
+  }
 
-      .model3d {
-        width: 100%;
-        height: 300px;
-      }
+  .content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 30px;
+  }
 
-      .buttons {
-        top: 15px;
-        right: 15px;
-        flex-direction: column;
-      }
+  .text-box {
+    max-width: 100%;
+    padding: 20px;
+    backdrop-filter: blur(20px);
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 6px 30px rgba(255, 255, 255, 0.06), 0 2px 15px rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+  }
 
-      .buttons button {
-        padding: 10px 20px;
-        font-size: 1rem;
-      }
+  .text-box h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.8rem;
+  }
 
-      .neura {
-        font-size: 24px;
-        top: 15px;
-        left: 15px;
-      }
-    }
+  .text-box p {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .model3d {
+    width: 100%;
+    height: 280px;
+  }
+}
+
+
+
+
   </style>
 </head>
 <body>
