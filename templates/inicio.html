@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>NEURA BOT</title>
-  <style>
-   * {
+<style>
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -23,45 +23,56 @@ html, body {
   width: 100%;
   height: 100vh;
   position: relative;
-  padding: 20px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
 }
 
 .neura {
   font-weight: 900;
   font-size: 28px;
   position: absolute;
-  top: 16px;
-  left: 20px;
+  top: 20px;
+  left: 24px;
   z-index: 2;
 }
 
 .buttons {
   position: absolute;
-  top: 16px;
-  right: 20px;
+  top: 20px;
+  right: 24px;
   z-index: 2;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .buttons button {
-  padding: 10px 20px;
-  font-size: 1rem;
-  background: linear-gradient(135deg, #00d2ff, #3a7bd5);
-  color: white;
+  padding: 10px 18px;
+  font-size: 0.95rem;
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  color: #fff;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
-  font-weight: bold;
-  letter-spacing: 0.6px;
-  box-shadow: 0 4px 14px rgba(0, 123, 255, 0.4);
-  transition: all 0.3s ease-in-out;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(0, 114, 255, 0.3);
+  transition: all 0.25s ease;
   position: relative;
   overflow: hidden;
+}
+
+.buttons button:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 18px rgba(0, 114, 255, 0.5);
+}
+
+.buttons button:active {
+  transform: scale(0.97);
 }
 
 .buttons button::before {
@@ -71,22 +82,13 @@ html, body {
   left: -75%;
   width: 200%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   transform: skewX(-20deg);
   transition: left 0.6s ease;
 }
 
 .buttons button:hover::before {
   left: 125%;
-}
-
-.buttons button:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 6px 18px rgba(0, 123, 255, 0.5);
-}
-
-.buttons button:active {
-  transform: scale(0.96);
 }
 
 .content {
@@ -96,7 +98,7 @@ html, body {
   justify-content: center;
   align-items: center;
   text-align: center;
-  gap: 24px;
+  gap: 28px;
   z-index: 1;
   animation: fadeIn 1.5s ease-in-out forwards;
   margin-top: 80px;
@@ -104,28 +106,29 @@ html, body {
 
 .text-box {
   width: 100%;
-  max-width: 360px;
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  max-width: 400px;
+  backdrop-filter: blur(12px);
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 10px;
-  padding: 20px;
-  box-shadow: 3px 6px 24px rgba(0, 0, 0, 0.5);
+  padding: 24px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
 }
 
 .text-box h1 {
-  font-size: 1.8rem;
-  margin-bottom: 1rem;
-  text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.6);
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+  text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.5);
 }
 
 .text-box p {
-  font-size: 1rem;
-  line-height: 1.5;
+  font-size: 1.05rem;
+  line-height: 1.6;
 }
 
 .model3d {
   width: 100%;
-  max-width: 300px;
+  max-width: 320px;
   height: 280px;
   animation: fadeIn 2s ease-in-out 0.5s forwards;
 }
@@ -141,78 +144,56 @@ html, body {
   }
 }
 
-/* Responsivo para dispositivos maiores (tablet ou mais) */
+/* Responsivo para telas menores */
 @media (max-width: 768px) {
   #vanta-bg {
-    padding: 20px;
-  }
-
-  .buttons {
-    flex-direction: row;
-    top: 15px;
-    right: 15px;
-    gap: 10px;
-  }
-
-  .buttons button {
-    padding: 8px 16px;
-    font-size: 0.75rem;
-    background: linear-gradient(135deg, #00d2ff, #3a7bd5);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    box-shadow: 0 4px 14px rgba(0, 123, 255, 0.3);
-    transition: all 0.25s ease-in-out;
-    position: relative;
-    overflow: hidden;
+    padding: 16px;
   }
 
   .neura {
     font-size: 20px;
-    top: 15px;
-    left: 15px;
+    top: 12px;
+    left: 16px;
+  }
+
+  .buttons {
+    flex-direction: row;
+    top: 12px;
+    right: 16px;
+    gap: 8px;
+  }
+
+  .buttons button {
+    padding: 8px 14px;
+    font-size: 0.8rem;
+    border-radius: 6px;
   }
 
   .content {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 30px;
+    margin-top: 60px;
+    gap: 20px;
   }
 
   .text-box {
-    max-width: 100%;
     padding: 20px;
-    backdrop-filter: blur(20px);
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1.5px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 6px 30px rgba(255, 255, 255, 0.06), 0 2px 15px rgba(0, 0, 0, 0.5);
-    border-radius: 10px;
+    max-width: 100%;
   }
 
   .text-box h1 {
-    font-size: 1.8rem;
-    margin-bottom: 0.8rem;
+    font-size: 1.6rem;
   }
 
   .text-box p {
     font-size: 1rem;
-    line-height: 1.5;
   }
 
   .model3d {
-    width: 100%;
-    height: 280px;
+    max-width: 280px;
+    height: 240px;
   }
 }
+</style>
 
-
-
-
-  </style>
 </head>
 <body>
   <div id="vanta-bg">
@@ -237,13 +218,7 @@ html, body {
         </p>
       </div>
 
-      <model-viewer class="model3d"
-        src="robo_face.glb"
-        alt="Modelo 3D"
-        auto-rotate
-        camera-controls
-        background-color="#000000">
-      </model-viewer>
+      
     </div>
   </div>
 

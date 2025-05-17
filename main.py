@@ -7,9 +7,9 @@ import string
 from models import Usuario, Mensagem, QA
 from db import db
 import cohere
-
 import os
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # FAQ por tema
@@ -76,13 +76,13 @@ def buscar_resposta(perguntas, mensagem):
 
     return None
 
-# Inicialize o cliente Cohere com sua API Key (preferencialmente armazenada em .env)
-co = cohere.Client('VnAKRl6kF5ksOAEvhQWwuDI5XMwyWEVIdpEX6Krl')
+# Inicializa o cliente Cohere
+co = cohere.Client(os.getenv("COHERE_API_KEY") or "VnAKRl6kF5ksOAEvhQWwuDI5XMwyWEVIdpEX6Krl")
 
 def buscar_resposta_gerada(mensagem):
     try:
         response = co.chat(
-            model='command-r-plus',  # use um modelo que suporte chat
+            model='command-r-plus',
             message=mensagem,
             max_tokens=150,
             temperature=0.7
@@ -101,17 +101,17 @@ def responder(mensagem):
         if resposta:
             return resposta
 
-    # 2. Fallback IA (Cohere Chat)
+    # 2. Fallback IA
     resposta_gerada = buscar_resposta_gerada(mensagem)
 
-    # Salva no banco
+    # Salvar no banco
     nova_qa = QA(pergunta=mensagem, resposta=resposta_gerada)
     db.session.add(nova_qa)
     db.session.commit()
 
     return resposta_gerada
 
-# Rotas
+# Rotas principais
 @app.route('/')
 def inicio():
     return render_template('inicio.html')
@@ -193,6 +193,27 @@ def chat():
                            email_usuario=current_user.email,
                            localizacao_usuario=getattr(current_user, "localizacao", "Não definida"))
 
+
+
+@app.route("/chat1", methods=["GET", "POST"])
+@login_required
+def chat1():
+    if request.method == "POST":
+        data = request.get_json()
+        user_input = data.get("message", "")
+        response = responder(user_input)
+
+        nova_mensagem = Mensagem(conteudo=user_input, usuario_id=current_user.id)
+        db.session.add(nova_mensagem)
+        db.session.commit()
+
+        return jsonify({"response": response})
+
+    return render_template("chat1.html",
+                           nome_usuario=current_user.nome,
+                           email_usuario=current_user.email,
+                           localizacao_usuario=getattr(current_user, "localizacao", "Não definida"))
+
 @app.route('/perfil')
 @login_required
 def perfil():
@@ -216,7 +237,6 @@ def registrarconta():
 @app.route('/ir-login', methods=["GET", "POST"])
 def irlogin():
     return redirect(url_for('login_view'))
-
 
 @app.route("/mensagens")
 @login_required
