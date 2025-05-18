@@ -16,9 +16,7 @@ load_dotenv()
 
 # Importa FAQs por tema
 from faq import (
-    apresentacao, funcionalidade, encerramento,
-    curiosidades_gerais, ciencia_e_historia, geografia_e_linguas,
-    literatura_e_arte, esportes, tecnologia_e_redes_sociais
+    apresentacao
 )
 
 # Flask config
@@ -41,15 +39,7 @@ def user_loader(id):
 # FAQs por tema
 qa_dict = {
     "apresentacao": apresentacao,
-    "funcionalidade": funcionalidade,
-    "encerramento": encerramento,
-    "curiosidades_gerais": curiosidades_gerais,
-    "ciencia_e_historia": ciencia_e_historia,
-    "geografia_e_linguas": geografia_e_linguas,
-    "literatura_e_arte": literatura_e_arte,
-    "esportes": esportes,
-    "tecnologia_e_redes_sociais": tecnologia_e_redes_sociais
-}
+    }
 
 # Função para normalizar texto
 def normalizar(texto):
