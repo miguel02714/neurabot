@@ -364,7 +364,7 @@
         <ul>
         <img class="foto-perfil1" src="https://img.freepik.com/psd-gratuitas/ilustracao-3d-de-uma-pessoa-com-oculos-de-sol_23-2149436188.jpg" alt="">
         <li>Configurações</li>
-        <form action="{{ url_for('logout') }}" method="post" style="display:inline;">
+        <form action="/logout" method="post" style="display:inline;">
     <button type="submit">Sair</button>
 </form>
         </ul>
@@ -441,6 +441,17 @@
         chatMessages.appendChild(messageDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
         }
+        function sendMessage() {
+    const message = userInput.value.trim();
+    if (!message) return;
+
+    // Esconde mensagem de orientação (se existir)
+    if (mensagemOrientacao) {
+      mensagemOrientacao.style.display = "none";
+    }
+
+    appendMessage(message, true);
+    userInput.value = '';}
 
         function sendMessage() {
         const input = document.getElementById("user-input");

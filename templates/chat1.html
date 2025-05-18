@@ -115,7 +115,9 @@ button img:hover {
   display: flex;
   align-items: center;
   gap: 15px;
-  margin-top: 20px;
+  margin-top: 100px;
+  
+
 }
 
 /* Input de digitar mensagem */
@@ -211,6 +213,73 @@ li:hover{
 .button1:hover::after {
   width: 100%;
 }
+.glow-on-hover {
+    width: 50px;
+    height: 50px;
+    border: none;
+    outline: none;
+    color: #fff;
+    background: #111;
+    cursor: pointer;
+    position: relative;
+    z-index: 0;
+    border-radius: 10px;
+     margin-top: 200px; /* adiciona essa linha para descer o botão */
+    margin-left: 300px;
+    
+}
+
+.glow-on-hover:before {
+    content: '';
+    background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+    position: absolute;
+    top: -2px;
+    left:-2px;
+    background-size: 400%;
+    z-index: -1;
+    filter: blur(5px);
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    animation: glowing 20s linear infinite;
+    opacity: 0;
+    transition: opacity .3s ease-in-out;
+    border-radius: 10px;
+}
+.mensagem-orientacao{
+  margin-left: auto;
+  margin-bottom: auto;
+  margin-top: auto;
+  margin-right: auto;
+}
+.glow-on-hover:active {
+    color: #000
+}
+
+.glow-on-hover:active:after {
+    background: transparent;
+}
+
+.glow-on-hover:hover:before {
+    opacity: 1;
+}
+
+.glow-on-hover:after {
+    z-index: -1;
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #111;
+    left: 0;
+    top: 0;
+    border-radius: 10px;
+}
+
+@keyframes glowing {
+    0% { background-position: 0 0; }
+    50% { background-position: 400% 0; }
+    100% { background-position: 0 0; }
+}
 @media (max-width: 500px) {
   nav {
     padding: 10px 15px;
@@ -232,6 +301,7 @@ li:hover{
 
   #chat-container {
     max-width: 100%;
+    max-height: 800px;
     padding: 10px 12px;
   }
 
@@ -279,13 +349,41 @@ li:hover{
     padding: 8px 16px;
     font-size: 14px;
   }
+  .mensagem-orientacao{
+    font-weight: bold;
+   
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 20px;
+    margin-bottom: 40vh;
+    
+  }
+  #chat-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+  position: relative; /* necessário para conter o input fixo */
 }
 
+#chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: #000;
+  
+}
 
+}
   </style>
 </head>
 <body>
-  <nav>
+  <nav href="#comeco">
     <button class="config" id="menuBtn">&#8801;</button>
     <p>NEURA BOT</p>
     <form action="/ir-perfil">
@@ -316,86 +414,107 @@ li:hover{
     <div id="chat-messages">
     <!-- Mensagens do chat -->
     </div>
-
+<p class="mensagem-orientacao">Olá, Como posso ajudar?</p>
     <div class="text" id="input-area">
       <input class="digitar" type="text" name="" id="user-input" placeholder="Digite uma mensagem...">
       <button id="send-btn" class="enviar">></button>
     </div>
   </div>
-
   <script>
-    // Seleção dos elementos pelo ID
-    const menuBtn = document.getElementById('menuBtn');
-    const sidebar = document.getElementById('sidebar');
-    const chatContainer = document.getElementById('chat-container');
-    const sendBtn = document.getElementById('send-btn');
-    const userInput = document.getElementById('user-input');
-    const chatMessages = document.getElementById('chat-messages');
+  // seu código existente aqui...
 
-    // Variável para controlar o estado do menu
-    let menuOpen = false;
+  const botaoComeco = document.getElementById('comeco');
 
-    // Função para alternar o menu lateral (sidebar)
-    menuBtn.addEventListener('click', () => {
-      menuOpen = !menuOpen;
-      menuBtn.innerHTML = menuOpen ? '&times;' : '&#8801;';
-      sidebar.classList.toggle('active', menuOpen);
-      chatContainer.classList.toggle('with-sidebar', menuOpen);
+  botaoComeco.addEventListener('click', () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
     });
+  });
+</script>
+  <script>
+    
+  const chatMessages = document.getElementById('chat-messages');
+  const userInput = document.getElementById('user-input');
+  const sendBtn = document.getElementById('send-btn');
+  const sidebar = document.getElementById('sidebar');
+  const menuBtn = document.getElementById('menuBtn');
+  const mensagemOrientacao = document.querySelector('.mensagem-orientacao');
 
-    // Função para adicionar mensagem no chat
-    function appendMessage(message, isUser = false) {
-      const messageDiv = document.createElement('div');
-      messageDiv.classList.add('message', isUser ? 'user' : 'ai');
+  // Alterna visibilidade do menu lateral
+  menuBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('active');
+  });
 
-      const content = document.createElement('div');
-      content.textContent = message;
+  // Envia mensagem quando o botão for clicado
+  sendBtn.addEventListener('click', sendMessage);
 
-      const timestamp = document.createElement('div');
-      timestamp.classList.add('timestamp');
-      timestamp.textContent = new Date().toLocaleTimeString();
+  // Envia com Enter também
+  userInput.addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
 
-      messageDiv.appendChild(content);
-      messageDiv.appendChild(timestamp);
+  // Função para adicionar mensagem no chat
+  function appendMessage(message, isUser = false, imageUrl = null) {
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message', isUser ? 'user' : 'ai');
 
-      chatMessages.appendChild(messageDiv);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
+    const content = document.createElement('div');
+    content.textContent = message;
+    messageDiv.appendChild(content);
+
+    if (imageUrl) {
+      const img = document.createElement('img');
+      img.src = imageUrl;
+      img.alt = "Imagem gerada";
+      img.style.maxWidth = "100%";
+      img.style.marginTop = "10px";
+      img.style.borderRadius = "10px";
+      messageDiv.appendChild(img);
     }
 
-    // Função para enviar mensagem para backend e receber resposta
-    function sendMessage() {
-      const message = userInput.value.trim();
-      if (!message) return;
+    const timestamp = document.createElement('div');
+    timestamp.classList.add('timestamp');
+    timestamp.textContent = new Date().toLocaleTimeString();
+    messageDiv.appendChild(timestamp);
 
-      // Adiciona mensagem do usuário no chat
-      appendMessage(message, true);
-      userInput.value = '';
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
 
-      // Exemplo de chamada para backend (rota /chat1)
-      fetch('/chat1', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: message })
-      })
-      .then(response => response.json())
-      .then(data => {
-        // Exibe resposta da IA no chat
-        appendMessage(data.response || 'Sem resposta do bot.');
-      })
-      .catch(error => {
-        appendMessage('Erro na comunicação com o servidor.');
-        console.error('Erro:', error);
-      });
+  // Função para enviar mensagem ao servidor
+  function sendMessage() {
+    const message = userInput.value.trim();
+    if (!message) return;
+
+    // Esconde mensagem de orientação (se existir)
+    if (mensagemOrientacao) {
+      mensagemOrientacao.style.display = "none";
     }
 
-    // Eventos para enviar mensagem ao clicar no botão ou pressionar Enter
-    sendBtn.addEventListener('click', sendMessage);
+    appendMessage(message, true);
+    userInput.value = '';
 
-    userInput.addEventListener('keypress', (event) => {
-      if (event.key === 'Enter') {
-        sendMessage();
-      }
+    fetch('/chat1', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: message })
+    })
+    .then(response => response.json())
+    .then(data => {
+      const resposta = data.response || "Erro ao obter resposta.";
+      const imageUrl = data.image_url || null;
+      appendMessage(resposta, false, imageUrl);
+    })
+    .catch(error => {
+      console.error('Erro:', error);
+      appendMessage('Erro ao se comunicar com o servidor.', false);
     });
-  </script>
+  }
+</script>
+
 </body>
 </html>
