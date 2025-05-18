@@ -10,6 +10,7 @@ from db import db
 import cohere
 import os
 from dotenv import load_dotenv
+from google.auth.transport import requests as google_requests
 
 load_dotenv()
 
@@ -55,6 +56,47 @@ def normalizar(texto):
     texto = ''.join(c for c in unicodedata.normalize('NFD', texto) if unicodedata.category(c) != 'Mn')
     texto = texto.translate(str.maketrans('', '', string.punctuation + ' '))
     return texto.lower()
+
+
+@app.route('/auth/google', methods=['POST'])
+def auth_google():
+    try:
+        token = request.json.get('token')
+        if not token:
+            return jsonify({"error": "Token não enviado"}), 400
+
+        # Verifica o token recebido com a API do Google
+        idinfo = id_token.verify_oauth2_token(token, google_requests.Request(), audience="AIzaSyCWyL9ENPHqRtfSpKyrAtML7VigfQ9lS4g")
+
+        # idinfo tem dados do usuário, como:
+        user_id = idinfo['sub']
+        email = idinfo.get('email')
+        name = idinfo.get('name')
+
+        # Aqui você faria: buscar o usuário no banco e criar se não existir
+        if user_id not in users:
+            users[user_id] = {
+                'email': email,
+                'name': name
+            }
+            created = True
+        else:
+            created = False
+
+        # Retorna dados do usuário para o frontend
+        return jsonify({
+            "user_id": user_id,
+            "email": email,
+            "name": name,
+            "created": created
+        })
+
+    except ValueError:
+        # Token inválido
+        return jsonify({"error": "Token inválido"}), 401
+
+
+
 
 # Busca por resposta em FAQ
 def buscar_resposta(perguntas, mensagem):
@@ -132,24 +174,73 @@ def page_not_found(e):
 @app.route("/login", methods=["GET", "POST"])
 def login_view():
     if request.method == "POST":
+        # Verifica se é JSON (como login via Google)
+        if request.is_json:
+            data = request.get_json()
+            email = data.get("email")
+            nome = data.get("nome")  # caso precise do nome também
+
+            if not email:
+                return jsonify({"status": "erro", "mensagem": "Email é obrigatório."}), 400
+
+            user = Usuario.query.filter_by(email=email).first()
+
+            if not user:
+                # Usuário ainda não existe, cria com senha falsa (como você fez no /registrar)
+                senha_fake = generate_password_hash("google_login")
+                user = Usuario(nome=nome or "Usuário Google", email=email, senha=senha_fake)
+                db.session.add(user)
+                db.session.commit()
+
+            login_user(user)
+            session.pop("tema_atual", None)
+            return jsonify({"status": "sucesso"})
+
+        # Caso contrário: formulário tradicional
         email = request.form.get("email")
         senha = request.form.get("senha")
+
         if not email or not senha:
             return render_template("login.html", erro="Preencha todos os campos.")
+
         user = Usuario.query.filter_by(email=email).first()
+
         if not user or not check_password_hash(user.senha, senha):
             return render_template("login.html", erro="Email ou senha incorretos.")
+
         login_user(user)
-        session.pop('tema_atual', None)
+        session.pop("tema_atual", None)
         return redirect(url_for("chat"))
+
     return render_template("login.html")
 
 @app.route("/registrar", methods=["GET", "POST"])
 def registrar():
     if request.method == "POST":
+        if request.is_json:
+            data = request.get_json()
+            nome = data.get("nome")
+            email = data.get("email")
+            if not nome or not email:
+                return jsonify({"status": "erro", "mensagem": "Dados incompletos."})
+            usuario_existente = Usuario.query.filter_by(email=email).first()
+            if usuario_existente:
+                login_user(usuario_existente)
+                session.pop("tema_atual", None)
+                return jsonify({"status": "sucesso"})
+            senha_fake = generate_password_hash("google_login")
+            novo_usuario = Usuario(nome=nome, email=email, senha=senha_fake)
+            db.session.add(novo_usuario)
+            db.session.commit()
+            login_user(novo_usuario)
+            session.pop("tema_atual", None)
+            return jsonify({"status": "sucesso"})
+        
+        # Caso seja formulário tradicional
         nome = request.form.get("nome")
         email = request.form.get("email")
         senha = request.form.get("senha")
+
         if not nome or not email or not senha:
             return render_template("registrar.html", erro="Todos os campos são obrigatórios.")
         if Usuario.query.filter_by(email=email).first():
@@ -159,9 +250,11 @@ def registrar():
         db.session.add(novo_usuario)
         db.session.commit()
         login_user(novo_usuario)
-        session.pop('tema_atual', None)
+        session.pop("tema_atual", None)
         return redirect(url_for("chat"))
+
     return render_template("registrar.html")
+
 
 @app.route("/logout", methods=["POST"])
 @login_required
