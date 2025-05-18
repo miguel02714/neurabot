@@ -11,6 +11,10 @@ import cohere
 import os
 from dotenv import load_dotenv
 from google.auth.transport import requests as google_requests
+import speech_recognition as sr
+from pydub import AudioSegment
+
+
 
 load_dotenv()
 
