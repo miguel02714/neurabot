@@ -207,7 +207,7 @@
     </div>
   </div>
 
-  <script>
+ <script>
   function parseJwt(token) {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -222,7 +222,7 @@
     const nome = data.name;
     const email = data.email;
 
-    fetch("/login", {
+    fetch("https://neurabot-zxkl.onrender.com/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -257,6 +257,7 @@
     );
   };
 </script>
+
 
 </body>
 </html>

@@ -194,7 +194,7 @@
     const email = data.email;
     const foto = data.picture;
 
-    fetch("/registrar", {
+    fetch("https://neurabot-zxkl.onrender.com/registrar", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -214,7 +214,22 @@
       alert("Erro de conexão.");
     });
   }
+
+  window.onload = function () {
+    google.accounts.id.initialize({
+      client_id: "32425465403-7gaq8scl338nuni9s7o7eapeuq1o6k8n.apps.googleusercontent.com",
+      callback: handleCredentialResponse
+    });
+    google.accounts.id.renderButton(
+      document.querySelector(".g_id_signin"),
+      {
+        theme: "outline",
+        size: "large"
+      }
+    );
+  };
 </script>
+
 
 </body>
 </html>
