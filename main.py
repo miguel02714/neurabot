@@ -187,106 +187,105 @@ def page_not_found(e):
 
 @app.route("/login", methods=["GET", "POST"])
 def login_view():
-    if request.method == "POST":
-        # Verifica se é JSON (como login via Google)
-        if request.is_json:
-            data = request.get_json()
-            email = data.get("email")
-            nome = data.get("nome")  # caso precise do nome também
-
-            if not email:
-                return jsonify({"status": "erro", "mensagem": "Email é obrigatório."}), 400
-
+    try:
+        if request.method == "POST":
+            if request.is_json:
+                data = request.get_json()
+                if not data:
+                    return jsonify({"status": "erro", "mensagem": "JSON inválido."}), 400
+                
+                email = data.get("email")
+                nome = data.get("nome")  # opcional
+                
+                if not email:
+                    return jsonify({"status": "erro", "mensagem": "Email é obrigatório."}), 400
+                
+                user = Usuario.query.filter_by(email=email).first()
+                
+                if not user:
+                    senha_fake = generate_password_hash("google_login")
+                    user = Usuario(nome=nome or "Usuário Google", email=email, senha=senha_fake)
+                    db.session.add(user)
+                    db.session.commit()
+                
+                login_user(user)
+                session.pop("tema_atual", None)
+                return jsonify({"status": "sucesso"})
+            
+            # Formulário tradicional
+            email = request.form.get("email")
+            senha = request.form.get("senha")
+            
+            if not email or not senha:
+                return render_template("login.html", erro="Preencha todos os campos.")
+            
             user = Usuario.query.filter_by(email=email).first()
-
-            if not user:
-                # Usuário ainda não existe, cria com senha falsa (como você fez no /registrar)
-                senha_fake = generate_password_hash("google_login")
-                user = Usuario(nome=nome or "Usuário Google", email=email, senha=senha_fake)
-                db.session.add(user)
-                db.session.commit()
-
+            if not user or not check_password_hash(user.senha, senha):
+                return render_template("login.html", erro="Email ou senha incorretos.")
+            
             login_user(user)
             session.pop("tema_atual", None)
-            return jsonify({"status": "sucesso"})
-
-        # Caso contrário: formulário tradicional
-        email = request.form.get("email")
-        senha = request.form.get("senha")
-
-        if not email or not senha:
-            return render_template("login.html", erro="Preencha todos os campos.")
-
-        user = Usuario.query.filter_by(email=email).first()
-
-        if not user or not check_password_hash(user.senha, senha):
-            return render_template("login.html", erro="Email ou senha incorretos.")
-
-        login_user(user)
-        session.pop("tema_atual", None)
-        return redirect(url_for("chat"))
-
-    return render_template("login.html")
+            return redirect(url_for("chat"))
+        
+        return render_template("login.html")
+    except Exception:
+        print(traceback.format_exc())
+        return render_template("login.html", erro="Erro interno no servidor."), 500
 
 @app.route("/registrar", methods=["GET", "POST"])
 def registrar():
-    if request.method == "POST":
-        foto_padrao = "https://img.freepik.com/psd-gratuitas/ilustracao-3d-de-uma-pessoa-com-oculos-de-sol_23-2149436188.jpg"  # ou qualquer URL de foto padrão
+    try:
+        foto_padrao = "https://img.freepik.com/psd-gratuitas/ilustracao-3d-de-uma-pessoa-com-oculos-de-sol_23-2149436188.jpg"
 
-        if request.is_json:
-            data = request.get_json()
-            nome = data.get("nome")
-            email = data.get("email")
-            if not nome or not email:
-                return jsonify({"status": "erro", "mensagem": "Dados incompletos."})
-
-            usuario_existente = Usuario.query.filter_by(email=email).first()
-            if usuario_existente:
-                login_user(usuario_existente)
+        if request.method == "POST":
+            if request.is_json:
+                data = request.get_json()
+                if not data:
+                    return jsonify({"status": "erro", "mensagem": "JSON inválido."}), 400
+                
+                nome = data.get("nome")
+                email = data.get("email")
+                
+                if not nome or not email:
+                    return jsonify({"status": "erro", "mensagem": "Dados incompletos."}), 400
+                
+                usuario_existente = Usuario.query.filter_by(email=email).first()
+                if usuario_existente:
+                    login_user(usuario_existente)
+                    session.pop("tema_atual", None)
+                    return jsonify({"status": "sucesso"})
+                
+                senha_fake = generate_password_hash("google_login")
+                novo_usuario = Usuario(nome=nome, email=email, senha=senha_fake, foto=foto_padrao)
+                db.session.add(novo_usuario)
+                db.session.commit()
+                login_user(novo_usuario)
                 session.pop("tema_atual", None)
                 return jsonify({"status": "sucesso"})
+            
+            # Formulário tradicional
+            nome = request.form.get("nome")
+            email = request.form.get("email")
+            senha = request.form.get("senha")
 
-            senha_fake = generate_password_hash("google_login")
-            novo_usuario = Usuario(
-                nome=nome,
-                email=email,
-                senha=senha_fake,
-                foto=foto_padrao
-            )
+            if not nome or not email or not senha:
+                return render_template("registrar.html", erro="Todos os campos são obrigatórios.")
+
+            if Usuario.query.filter_by(email=email).first():
+                return render_template("registrar.html", erro="Email já cadastrado.")
+
+            senha_hash = generate_password_hash(senha)
+            novo_usuario = Usuario(nome=nome, email=email, senha=senha_hash, foto=foto_padrao)
             db.session.add(novo_usuario)
             db.session.commit()
             login_user(novo_usuario)
             session.pop("tema_atual", None)
-            return jsonify({"status": "sucesso"})
+            return redirect(url_for("chat"))
         
-        # Caso seja formulário tradicional
-        nome = request.form.get("nome")
-        email = request.form.get("email")
-        senha = request.form.get("senha")
-
-        if not nome or not email or not senha:
-            return render_template("registrar.html", erro="Todos os campos são obrigatórios.")
-        
-        if Usuario.query.filter_by(email=email).first():
-            return render_template("registrar.html", erro="Email já cadastrado.")
-
-        senha_hash = generate_password_hash(senha)
-        novo_usuario = Usuario(
-            nome=nome,
-            email=email,
-            senha=senha_hash,
-            foto=foto_padrao
-        )
-        db.session.add(novo_usuario)
-        db.session.commit()
-        login_user(novo_usuario)
-        session.pop("tema_atual", None)
-        return redirect(url_for("chat"))
-
-    return render_template("registrar.html")
-
-
-
+        return render_template("registrar.html")
+    except Exception:
+        print(traceback.format_exc())
+        return render_template("registrar.html", erro="Erro interno no servidor."), 500
 @app.route('/trocarfoto')
 def trocarfoto():
     return render_template("fotos_perfil.html")
