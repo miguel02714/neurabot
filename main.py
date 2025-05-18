@@ -127,6 +127,30 @@ def buscar_resposta_gerada(mensagem):
     except Exception as e:
         return f"Erro ao tentar se comunicar com a IA externa: {str(e)}"
 
+@app.route('/transcrever-audio', methods=['POST'])
+@login_required
+def transcrever_audio():
+    if 'audio' not in request.files:
+        return jsonify({'erro': 'Nenhum arquivo enviado'}), 400
+
+    audio_file = request.files['audio']
+    filename = secure_filename(audio_file.filename)
+    audio_path = os.path.join('audios_temp', filename)
+    os.makedirs('audios_temp', exist_ok=True)
+    audio_file.save(audio_path)
+
+    recognizer = sr.Recognizer()
+    with sr.AudioFile(audio_path) as source:
+        audio_data = recognizer.record(source)
+
+    try:
+        texto = recognizer.recognize_google(audio_data, language='pt-BR')
+        return jsonify({'texto': texto})
+    except sr.UnknownValueError:
+        return jsonify({'erro': 'Não foi possível entender o áudio.'}), 400
+    except sr.RequestError:
+        return jsonify({'erro': 'Erro ao se conectar com o serviço de transcrição.'}), 500
+
 # Lógica combinada de resposta
 def responder(mensagem):
     # Comando para gerar imagem

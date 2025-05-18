@@ -378,6 +378,39 @@ li:hover{
   background-color: #000;
   
 }
+#start-record-btn {
+  background-color: #4CAF50; /* verde */
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#start-record-btn:hover {
+  background-color: #45a049;
+}
+
+#start-record-btn.recording {
+  background-color: red;
+  animation: pulse 1s infinite;
+}
+
+/* Efeito de pulsar enquanto grava */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+  }
+}
 
 }
   </style>
@@ -416,9 +449,10 @@ li:hover{
     </div>
 <p class="mensagem-orientacao">Olá, Como posso ajudar?</p>
     <div class="text" id="input-area">
-      <input class="digitar" type="text" name="" id="user-input" placeholder="Digite uma mensagem...">
-      <button id="send-btn" class="enviar">></button>
-    </div>
+  <input class="digitar" type="text" name="" id="user-input" placeholder="Digite uma mensagem...">
+  <button id="send-btn" class="enviar">></button>
+  <button onclick="iniciarGravacao()">🎤 Falar</button>
+</div>
   </div>
   <script>
   // seu código existente aqui...
@@ -432,8 +466,48 @@ li:hover{
     });
   });
 </script>
+
   <script>
-    
+let mediaRecorder;
+let audioChunks = [];
+
+function iniciarGravacao() {
+    navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.start();
+            audioChunks = [];
+
+            mediaRecorder.addEventListener("dataavailable", event => {
+                audioChunks.push(event.data);
+            });
+
+            mediaRecorder.addEventListener("stop", () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                const formData = new FormData();
+                formData.append("audio", audioBlob, "audio.wav");
+
+                fetch("/transcrever-audio", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.texto) {
+                        document.getElementById("mensagem").value = data.texto;
+                    } else {
+                        alert("Erro: " + data.erro);
+                    }
+                });
+            });
+
+            setTimeout(() => mediaRecorder.stop(), 5000); // grava por 5 segundos
+        });
+}
+</script>
+
+<script>
+
   const chatMessages = document.getElementById('chat-messages');
   const userInput = document.getElementById('user-input');
   const sendBtn = document.getElementById('send-btn');
