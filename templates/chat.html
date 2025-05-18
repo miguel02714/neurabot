@@ -354,7 +354,7 @@
         <span>NeuraBot</span>
         <form action="/perfil" style="margin-left:auto;">
         <button type="submit" class="profile-button">
-            <img src="https://img.freepik.com/psd-gratuitas/ilustracao-3d-de-uma-pessoa-com-oculos-de-sol_23-2149436188.jpg" alt="Profile" id="profile-pic" />
+            <img src="{{ foto }}" alt="Profile" id="profile-pic" />
         </button>
         </form>
     </header>
@@ -362,7 +362,7 @@
     <div id="sidebar" class="hidden">
         <h2>Perfil</h2>
         <ul>
-        <img class="foto-perfil1" src="https://img.freepik.com/psd-gratuitas/ilustracao-3d-de-uma-pessoa-com-oculos-de-sol_23-2149436188.jpg" alt="">
+        <img class="foto-perfil1" src="{{ foto }}" alt="">
         <li>Configurações</li>
         <form action="/logout" method="post" style="display:inline;">
     <button type="submit">Sair</button>
