@@ -226,7 +226,7 @@ def login_view():
             
             login_user(user)
             session.pop("tema_atual", None)
-            return redirect(url_for("chat"))
+            return redirect(url_for("chat1"))
         
         return render_template("login.html")
     except Exception:
@@ -281,7 +281,7 @@ def registrar():
             db.session.commit()
             login_user(novo_usuario)
             session.pop("tema_atual", None)
-            return redirect(url_for("chat"))
+            return redirect(url_for("chat1"))
         
         return render_template("registrar.html")
     except Exception:
@@ -362,6 +362,8 @@ def logout():
     logout_user()
     session.pop('tema_atual', None)
     return redirect(url_for("login_view"))
+
+
 
 @app.route("/chat", methods=["GET", "POST"])
 @login_required

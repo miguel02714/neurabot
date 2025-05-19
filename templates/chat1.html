@@ -7,357 +7,342 @@
   <link rel="shortcut icon" href="NEURA BOT (3).png" type="image/x-icon">
    <style>
     /* Corpo */
-    body {
-      background-color: black;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      font-weight: 700;
-      color: white;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+    /* Corpo */
+body {
+  background-color: black;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
 
-    /* Navegação */
-    nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 15px 20px;
-      background-color: black;
-      border-bottom: 2px solid #000;
-    }
+/* Navegação */
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 20px;
+  background-color: black;
+  border-bottom: 2px solid #000;
+}
 
-    /* Ícone de configuração */
-    .config {
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 28px; /* menor para caber no celular */
-      cursor: pointer;
-      user-select: none;
-    }
+/* Ícone de configuração */
+.config {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 28px;
+  cursor: pointer;
+  user-select: none;
+}
 
-    /* Texto */
-    p {
-      font-size: 22px; /* menor para celular */
-      font-weight: 900;
-      margin: 0;
-      font-family: 'Arial Black', Arial, Helvetica, sans-serif;
-      color: #fff;
-      letter-spacing: 2px;
-    }
+/* Título */
+p {
+  font-size: 22px;
+  font-weight: 900;
+  margin: 0;
+  font-family: 'Arial Black', Arial, Helvetica, sans-serif;
+  color: #fff;
+  letter-spacing: 2px;
+}
 
-    /* Botão perfil estilizado */
-    .perfil1 {
-      background: none;
-      border: none;
-      padding: 0;
-      cursor: pointer;
-      border-radius: 50%;
-      overflow: hidden;
-      width: 45px; /* menor para celular */
-      height: 45px;
-      box-shadow: 0 0 6px 1.5px rgba(255,255,255,0.5);
-      transition: box-shadow 0.3s ease, transform 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+/* Botão perfil */
+.perfil1 {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 50%;
+  overflow: hidden;
+  width: 45px;
+  height: 45px;
+  box-shadow: 0 0 6px 1.5px rgba(255,255,255,0.5);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-    .perfil1:hover {
-      box-shadow: 0 0 10px 2px #00bfff;
-      transform: scale(1.1);
-    }
+.perfil1:hover {
+  box-shadow: 0 0 10px 2px #00bfff;
+  transform: scale(1.1);
+}
 
-    /* Imagem dentro do botão perfil */
-    .perfil1 img.perfil {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 50%;
-      display: block;
-    }
+.perfil1 img.perfil {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
 
-    /* Container do chat */
-    #chat-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      max-width: 100%; /* ajustar para tela pequena */
-      margin: 20px auto 30px;
-      padding: 15px 20px;
-      box-sizing: border-box;
-      position: relative;
-      width: 100%;
-    }
+/* Container do chat */
+#chat-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  margin: 20px auto;
+  padding: 15px 20px 100px; /* espaço extra embaixo para input */
+  box-sizing: border-box;
+  position: relative;
+  width: 100%;
+}
 
-    /* Mensagens */
-    #chat-messages {
-      flex: 1;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
+/* Área de mensagens */
+#chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
 
-    /* Mensagem genérica */
-    .message {
-      background-color: #141414;
-      padding: 12px 18px; /* menor padding para celular */
-      border-radius: 18px;
-      max-width: 80%;
-      word-wrap: break-word;
-      font-size: 15px; /* menor fonte para celular */
-      line-height: 1.4;
-    }
+/* Mensagens */
+.message {
+  background-color: #141414;
+  padding: 12px 18px;
+  border-radius: 18px;
+  max-width: 80%;
+  word-wrap: break-word;
+  font-size: 15px;
+  line-height: 1.4;
+}
 
-    /* Mensagem do usuário */
-    .user {
-      align-self: flex-end;
-      background-color: #fff;
-      color: #000;
-      font-weight: 700;
-    }
+.user {
+  align-self: flex-end;
+  background-color: #fff;
+  color: #000;
+  font-weight: 700;
+}
 
-    /* Mensagem da IA */
-    .ai {
-      align-self: flex-start;
-      background-color: #fff;
-      color: #000;
-    }
+.ai {
+  align-self: flex-start;
+  background-color: #fff;
+  color: #000;
+}
 
-    /* Timestamp */
-    .timestamp {
-      font-size: 10px; /* menor para celular */
-      color: #000;
-      margin-top: 4px;
-      text-align: right;
-      font-family: 'Courier New', Courier, monospace;
-      letter-spacing: 0.5px;
-    }
+.timestamp {
+  font-size: 10px;
+  color: #000;
+  margin-top: 4px;
+  text-align: right;
+  font-family: 'Courier New', Courier, monospace;
+  letter-spacing: 0.5px;
+}
 
-    /* Campo de digitação */
-    .text {
-      display: flex;
-      align-items: center;
-      gap: 10px; /* menos espaço para celular */
-      margin-top: 25px;
-      justify-content: center;
-      width: 100%;
-      padding: 0 10px;
-      box-sizing: border-box;
-    }
+/* Campo de digitação */
+.text {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  width: 100%;
+  padding: 12px 16px;
+  box-sizing: border-box;
+  position: fixed;
+  bottom: 20px;
+  left: 0;
+  background-color: #000;
+  z-index: 1000;
+}
 
-    .digitar {
-      flex: 1;
-      border-radius: 20px;
-      color: white;
-      padding: 10px 16px; /* menor padding */
-      background-color: black;
-      border: 2px solid #fff;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      font-weight: 700;
-      font-size: 16px; /* menor fonte */
-      outline: none;
-      width: 100%;
-      max-width: 400px; /* limitar para telas pequenas */
-    }
+.digitar {
+  flex: 1;
+  border-radius: 20px;
+  color: white;
+  padding: 12px 18px;
+  background-color: black;
+  border: 2px solid #fff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  outline: none;
+  max-width: 400px;
+}
 
-    .digitar::placeholder {
-      color: #fff;
-      font-weight: 600;
-    }
+.digitar::placeholder {
+  color: #fff;
+  font-weight: 600;
+}
 
-    /* Botão de enviar */
-    .enviar {
-      width: 50px; /* menor botão */
-      height: 50px;
-      border-radius: 50%;
-      font-size: 26px; /* menor fonte */
-      font-weight: 900;
-      cursor: pointer;
-      background-color: #fff;
-      color: #000;
-      border: none;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+/* Botão enviar */
+.enviar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  font-size: 26px;
+  font-weight: 900;
+  cursor: pointer;
+  background-color: #fff;
+  color: #000;
+  border: none;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-    /* Sidebar estilizada */
-    #sidebar {
-      position: fixed;
-      top: 60px;
-      left: 0;
-      width: 200px; /* menor para celular */
-      height: calc(100% - 70px);
-      background: linear-gradient(135deg, #000, #000);
-      color: #cce7ff;
-      padding: 20px 15px;
-      display: none;
-      z-index: 1200;
-      overflow-y: auto;
-      border-right: 2px solid #000;
-      box-shadow: 2px 0 15px #000;
-      border-radius: 0 15px 15px 0;
-      backdrop-filter: blur(8px);
-      user-select: none;
-    }
+/* Sidebar */
+#sidebar {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  width: 200px;
+  height: calc(100% - 70px);
+  background: linear-gradient(135deg, #000, #000);
+  color: #cce7ff;
+  padding: 20px 15px;
+  display: none;
+  z-index: 1200;
+  overflow-y: auto;
+  border-right: 2px solid #000;
+  box-shadow: 2px 0 15px #000;
+  border-radius: 0 15px 15px 0;
+  backdrop-filter: blur(8px);
+  user-select: none;
+}
 
-    #sidebar.active {
-      display: block;
-    }
+#sidebar.active {
+  display: block;
+}
 
-    #sidebar h2 {
-      font-weight: 900;
-      font-size: 24px; /* menor para celular */
-      color: #fff;
-      margin-bottom: 20px;
-      text-shadow: 0 0 6px #fff;
-    }
+#sidebar h2 {
+  font-weight: 900;
+  font-size: 24px;
+  color: #fff;
+  margin-bottom: 20px;
+  text-shadow: 0 0 6px #fff;
+}
 
-    /* Lista do menu */
-    #sidebar ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
+#sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
 
-    #sidebar li {
-      margin-bottom: 16px;
-      font-weight: 700;
-      font-size: 16px;
-      transition: color 0.3s ease;
-    }
+#sidebar li {
+  margin-bottom: 16px;
+  font-weight: 700;
+  font-size: 16px;
+  transition: color 0.3s ease;
+}
 
-    #sidebar li:hover {
-      color: #fff;
-      cursor: pointer;
-    }
+#sidebar li:hover {
+  color: #fff;
+  cursor: pointer;
+}
 
-    /* Botões no menu */
-    .button1 {
-      background-color: transparent;
-      border: none;
-      color: #fff;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      font-weight: 700;
-      cursor: pointer;
-      padding: 10px 20px;
-      position: relative;
-      transition: background-color 0.3s ease, color 0.3s ease;
-      outline: none;
-      border-radius: 10px;
-      text-align: left;
-      width: 100%;
-      user-select: none;
-      font-size: 16px;
-    }
+/* Botão menu */
+.button1 {
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 10px 20px;
+  position: relative;
+  border-radius: 10px;
+  text-align: left;
+  width: 100%;
+  user-select: none;
+  font-size: 16px;
+}
 
-    .button1::after {
-      content: "";
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      border: solid #fff;
-      border-width: 0 3px 3px 0;
-      padding: 5px;
-      transform-origin: center;
-      transition: transform 0.3s ease;
-    }
+.button1:hover {
+  background-color: #000;
+  color: #fff;
+  box-shadow: 0 0 10px #fff;
+}
 
-    .button1:hover {
-      background-color: #000;
-      color: #fff;
-      box-shadow: 0 0 10px #fff;
-    }
+.button1.active::after {
+  transform: translateY(-50%) rotate(45deg);
+  border-color: #fff;
+}
 
-    .button1.active::after {
-      transform: translateY(-50%) rotate(45deg);
-      border-color: #fff;
-    }
+/* Botão abrir menu */
+#menuBtn {
+  font-size: 34px;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 4px 10px;
+  user-select: none;
+}
 
-    /* Botão de menu principal */
-    #menuBtn {
-      font-size: 34px; /* um pouco menor para celular */
-      background: none;
-      border: none;
-      color: #fff;
-      cursor: pointer;
-      padding: 4px 10px;
-      transition: color 0.4s ease;
-      user-select: none;
-    }
+/* RESPONSIVO para celulares */
+@media (max-width: 500px) {
+  #chat-container {
+    margin: 10px 5px;
+    padding: 10px 15px 120px;
+  }
 
-    #menuBtn:hover {
-      color: #fff;
-    }
+  p {
+    font-size: 18px;
+  }
 
-    /* Responsividade para Moto G54 (tela ~6.5" 1080x2340 px, 393x852 CSS px aprox) */
-    @media (max-width: 430px) {
-      #chat-container {
-        margin: 15px 10px 25px;
-        padding: 10px 15px;
-      }
+  .config {
+    font-size: 26px;
+  }
 
-      p {
-        font-size: 18px;
-      }
+  .perfil1 {
+    width: 40px;
+    height: 40px;
+  }
 
-      .config {
-        font-size: 26px;
-      }
+  #sidebar {
+    width: 170px;
+    top: 55px;
+    height: calc(100% - 60px);
+    padding: 15px 12px;
+  }
 
-      .perfil1 {
-        width: 40px;
-        height: 40px;
-        box-shadow: 0 0 5px 1px rgba(255,255,255,0.5);
-      }
+  #sidebar h2 {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
 
-      #sidebar {
-        width: 170px;
-        top: 55px;
-        height: calc(100% - 60px);
-        padding: 15px 12px;
-      }
+  .button1 {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
 
-      #sidebar h2 {
-        font-size: 20px;
-        margin-bottom: 16px;
-      }
+  .digitar {
+    font-size: 14px;
+    padding: 10px 14px;
+  }
 
-      .button1 {
-        font-size: 14px;
-        padding: 8px 16px;
-      }
+  .enviar {
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
+  }
 
-      .digitar {
-        font-size: 14px;
-        padding: 8px 14px;
-        max-width: 100%;
-      }
+  .message {
+    font-size: 14px;
+    padding: 10px 14px;
+  }
 
-      .enviar {
-        width: 44px;
-        height: 44px;
-        font-size: 22px;
-      }
+  .timestamp {
+    font-size: 9px;
+  }
+  .mensagem-orientacao{
+    margin-left: auto;
+    margin-right: auto;
+   
+   
+    margin-bottom: 60px;
+  }
+}
 
-      .message {
-        font-size: 14px;
-        padding: 10px 14px;
-        max-width: 85%;
-      }
 
-      .timestamp {
-        font-size: 9px;
-      }
-    }
+
   </style>
 </head>
 <body>
@@ -376,8 +361,8 @@
   <div id="sidebar">
     <h2>Menu</h2>
     <ul>
-        <form action="/ir-config">
-      <li> <button class="button1" type="submit">Configurações</button></li>
+        <form action="/historico">
+      <li> <button class="button1" type="submit">Historico</button></li>
       </form>
       <form action="/ir-perfil">
       <li><button class="button1" type="submit">Perfil</button></li>
