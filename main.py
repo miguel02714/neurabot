@@ -188,6 +188,7 @@ def page_not_found(e):
 @app.route("/login", methods=["GET", "POST"])
 def login_view():
     try:
+        foto_padrao = "https://img.freepik.com/psd-gratuitas/ilustracao-3d-de-uma-pessoa-com-oculos-de-sol_23-2149436188.jpg"
         if request.method == "POST":
             if request.is_json:
                 data = request.get_json()
@@ -204,7 +205,7 @@ def login_view():
                 
                 if not user:
                     senha_fake = generate_password_hash("google_login")
-                    user = Usuario(nome=nome or "Usuário Google", email=email, senha=senha_fake)
+                    user = Usuario(nome=nome or "Usuário Google", email=email, senha=senha_fake, foto=foto_padrao)
                     db.session.add(user)
                     db.session.commit()
                 
