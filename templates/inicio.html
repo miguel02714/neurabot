@@ -1,264 +1,627 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>NEURA BOT</title>
-  <link rel="shortcut icon" href="NEURA BOT (3).png" type="image/x-icon">
-  
-<style>
-/*==============================
-=          Reset               =
-==============================*/
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neura IA</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-html, body {
-  height: 100%;
-  font-family: 'Segoe UI', sans-serif;
+    html, body {
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+      background-color: #000;
+      overflow-y: auto; /* permite scroll */
+    }
+
+    #vanta-bg {
+      width: 100%;
+      height: 100vh;
+      position: relative;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+       overflow: hidden;
+    }
+
+    .neura {
+      font-weight: 900;
+      font-size: 28px;
+      position: absolute;
+      top: 20px;
+      left: 24px;
+      z-index: 2;
+    }
+
+    .buttons {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      z-index: 2;
+      display: flex;
+      flex-direction: row;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .buttons button {
+      padding: 10px 18px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 114, 255, 0.3);
+      transition: all 0.25s ease;
+    }
+
+    .buttons button:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 6px 18px rgba(0, 114, 255, 0.5);
+    }
+
+    .buttons button:active {
+      transform: scale(0.97);
+    }
+
+    .buttons button::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -75%;
+      width: 200%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.08);
+      transform: skewX(-20deg);
+      transition: left 0.6s ease;
+    }
+
+    .buttons button:hover::before {
+      left: 125%;
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      gap: 28px;
+      margin-top: 80px;
+      z-index: 1;
+      animation: fadeIn 1.5s ease-in-out forwards;
+    }
+    .content:hover{
+      cursor: default;
+    }
+
+    .text-box {
+      width: 100%;
+      max-width: 400px;
+      padding: 24px;
+      border-radius: 10px;
+      backdrop-filter: blur(22px);
+      background-color: rgba(255, 255, 255, 0.116);
+      border: 1px solid rgba(255, 255, 255, 0.075);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+    }
+
+    .text-box h1 {
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+      text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.5);
+    }
+
+    .text-box p {
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      #vanta-bg {
+        padding: 6px;
+      }
+
+      .neura {
+        font-size: 20px;
+        top: 12px;
+        left: 16px;
+      }
+
+      .buttons {
+        top: 19px;
+        right: 16px;
+        gap: 8px;
+      }
+
+      .buttons button {
+        padding: 8px 14px;
+        font-size: 0.8rem;
+        border-radius: 6px;
+        width: 100px;
+      }
+
+      .content {
+        margin-top: 60px;
+        gap: 20px;
+      }
+
+      .text-box {
+        padding: 20px;
+        max-width: 100%;
+      }
+
+      .text-box h1 {
+        font-size: 1.6rem;
+      }
+
+      .text-box p {
+        font-size: 1rem;
+      }
+    }
+
+    .stars {
+      position: fixed;
+      width: 100px;
+      height: 100%;
+      background: transparent;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .stars::before {
+      content: "";
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      box-shadow:
+        10vw 10vh white, 20vw 15vh white, 30vw 20vh white, 40vw 30vh white,
+        50vw 40vh white, 60vw 50vh white, 70vw 60vh white, 80vw 70vh white,
+        90vw 80vh white, 5vw 85vh white, 15vw 75vh white, 25vw 65vh white,
+        35vw 55vh white, 45vw 45vh white, 55vw 35vh white, 65vw 25vh white,
+        75vw 15vh white, 85vw 5vh white, 95vw 95vh white, 12vw 50vh white,
+        22vw 60vh white, 32vw 70vh white, 42vw 80vh white, 52vw 90vh white,
+        62vw 100vh white;
+      animation: twinkle 5s infinite ease-in-out;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 0.2; }
+    }
+
+    .shooting-star {
+      position: absolute;
+      width: 120px;
+      height: 2px;
+      background: linear-gradient(90deg, white, transparent);
+      animation: shoot 4s linear infinite;
+      z-index: 1;
+      opacity: 0;
+    }
+
+    .shooting-star:nth-child(2) { top: 10%; left: -150px; animation-delay: 0s; }
+    .shooting-star:nth-child(3) { top: 25%; left: -150px; animation-delay: 1s; }
+    .shooting-star:nth-child(4) { top: 40%; left: -150px; animation-delay: 2s; }
+    .shooting-star:nth-child(5) { top: 55%; left: -150px; animation-delay: 3s; }
+    .shooting-star:nth-child(6) { top: 70%; left: -150px; animation-delay: 4s; }
+    .shooting-star:nth-child(7) { top: 85%; left: -150px; animation-delay: 5s; }
+    
+
+
+    @keyframes shoot {
+      0% {
+        transform: translateX(0) translateY(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translateX(130vw) translateY(-30px);
+        opacity: 0;
+      }
+    }
+
+    .texto2 {
+      max-width: 700px;
+      font-size: 16px;
+      margin: 30vh; /* empurra bem para baixo */
+      text-align: center;
+      padding: 24px;
+      margin-left: auto;
+      margin-right: auto;
+      background-color: rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+      line-height: 1.7;
+    }
+    .testarIa{
+      margin: 40vh  ;
+      text-align: center;
+      align-items: center;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .ai-button-glow {
+  padding: 14px 28px;
+  font-size: 1rem;
+  font-weight: 700;
   color: white;
-  background-color: #000;
-  overflow: hidden;
-}
-
-/*==============================
-=        Estrutura Base        =
-==============================*/
-#vanta-bg {
-  width: 100%;
-  height: 100vh;
-  position: relative;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-/*==============================
-=           Header             =
-==============================*/
-.neura {
-  font-weight: 900;
-  font-size: 28px;
-  position: absolute;
-  top: 20px;
-  left: 24px;
-  z-index: 2;
-}
-
-/*==============================
-=          Botões              =
-==============================*/
-.buttons {
-  position: absolute;
-  top: 20px;
-  right: 24px;
-  z-index: 2;
-  display: flex;
-  flex-direction: row;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.buttons button {
-  padding: 10px 18px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  background: linear-gradient(135deg, #00c6ff, #0072ff);
-  color: #fff;
+  background: linear-gradient(145deg, #0ff, #09f);
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
+  box-shadow: 0 0 12px rgba(0, 255, 255, 0.6);
+  transition: transform 0.2s ease;
   position: relative;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 114, 255, 0.3);
-  transition: all 0.25s ease;
+  z-index: 1;
+  animation: glow 2s infinite ease-in-out;
 }
 
-.buttons button:hover {
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 6px 18px rgba(0, 114, 255, 0.5);
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 12px rgba(0, 255, 255, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(0, 255, 255, 1);
+  }
+  100% {
+    box-shadow: 0 0 12px rgba(0, 255, 255, 0.6);
+  }
 }
 
-.buttons button:active {
+.ai-button-glow:hover {
+  transform: scale(1.05);
+}
+
+.ai-button-glow:active {
   transform: scale(0.97);
 }
+#projector {
+  position: absolute; 
+  top: 0px;
+  left: 0px;
+  width:100%;
+  height:100%;
+} 
 
-.buttons button::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -75%;
-  width: 200%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.08);
-  transform: skewX(-20deg);
-  transition: left 0.6s ease;
+.center-div {
+	width:580px;
+    height:374px;
+    position:absolute;
+    left:50%;
+    top:50%;
+    margin-left: -290px;
+    margin-top:  -187px;
 }
 
-.buttons button:hover::before {
-  left: 125%;
+#preloaderDiv
+{
+	position:absolute;
+	left:50%;
+    top:50%;
+    margin-left: -27px;
+    margin-top:  -27px;
 }
 
-/*==============================
-=        Conteúdo Central      =
-==============================*/
-.content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  gap: 28px;
-  margin-top: 80px;
-  z-index: 1;
-  animation: fadeIn 1.5s ease-in-out forwards;
+#logo{
+	opacity:0;
+    filter: alpha(opacity=0);
 }
 
-.text-box {
-  width: 100%;
-  max-width: 400px;
-  padding: 24px;
-  border-radius: 10px;
-  backdrop-filter: blur(12px);
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+#date2014
+{
+	position:absolute;
+	padding-left: 210px;
+	padding-top:15px;
+	opacity:0;
+	top:303px;
+	left:0;
+    filter: alpha(opacity=0);
+}html, body {
+	width:100%; 
+	height:100%; 
+	padding:0px; 
+	margin:0px;
+
+	background: #191d1e; /* Old browsers */
+	background: -moz-linear-gradient(0deg,  #191d1e 50%, #283139 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, right bottom, color-stop(50%,#191d1e), color-stop(100%,#283139)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(0deg,  #191d1e 50%,#283139 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(0deg,  #191d1e 50%,#283139 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(0deg,  #191d1e 50%,#283139 100%); /* IE10+ */
+	background: linear-gradient(0deg,  #191d1e 50%,#283139 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#191d1e', endColorstr='#283139',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+	background-attachment: absolute
 }
-
-.text-box h1 {
-  font-size: 2rem;
-  margin-bottom: 0.75rem;
-  text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.5);
-}
-
-.text-box p {
-  font-size: 1.05rem;
-  line-height: 1.6;
-}
-
-.model3d {
-  width: 100%;
-  max-width: 320px;
-  height: 280px;
-  animation: fadeIn 2s ease-in-out 0.5s forwards;
-}
-
-/*==============================
-=          Animações           =
-==============================*/
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/*==============================
-=      Responsividade          =
-==============================*/
-@media (max-width: 768px) {
-  #vanta-bg {
-    padding: 16px;
-  }
-
-  .neura {
-    font-size: 20px;
-    top: 12px;
-    left: 16px;
-  }
-
-  .buttons {
-    top: 12px;
-    right: 16px;
-    gap: 8px;
-  }
-
-  .buttons button {
-    padding: 8px 14px;
-    font-size: 0.8rem;
-    border-radius: 6px;
-  }
-
-  .content {
-    margin-top: 60px;
-    gap: 20px;
-  }
-
-  .text-box {
-    padding: 20px;
-    max-width: 100%;
-  }
-
-  .text-box h1 {
-    font-size: 1.6rem;
-  }
-
-  .text-box p {
-    font-size: 1rem;
-  }
-
-  .model3d {
-    max-width: 280px;
-    height: 240px;
-  }
-}
-</style>
-
+  </style>
 </head>
 <body>
+
   <div id="vanta-bg">
-    <p class="neura">NEURA <span style="color: #3fa4ff;">BOT</span></p>
+    <div class="neura">Neura Bot</div>
 
     <div class="buttons">
-      <form action="/ir-login">
-      <button class="login">LOGIN</button>
-      </form>
       <form action="/registrar-conta">
-      <button class="registro">REGISTRO</button>
+      <button>Login</button>
       </form>
+      <form action="/ir-login">
+      <button>Registrar</button>
+      </form>
+      
     </div>
 
     <div class="content">
       <div class="text-box">
-        <h1>Bem-vindo à Neura Bot</h1>
-        <p>
-          A sua primeira inteligência artificial brasileira de alto nível,<br>
+        <h1>Bem-vindo ao futuro</h1>
+        <p> A sua primeira inteligência artificial brasileira de alto nível,<br>
           feita para pensar com você, aprender com você<br>
-          e evoluir junto com o Brasil — com inovação, inteligência e propósito.
-        </p>
+          e evoluir junto com o Brasil — com inovação, inteligência e propósito.</p>
       </div>
-
-      
     </div>
+
+    <div class="stars"></div>
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
   </div>
 
-  <!-- SCRIPTS -->
-  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
-  <script>
-    VANTA.NET({
-      el: "#vanta-bg",
-      mouseControls: true,
-      touchControls: true,
-      gyroControls: false,
-      minHeight: 200.00,
-      minWidth: 200.00,
-      scale: 1.00,
-      scaleMobile: 1.00,
-      color: 0x3fa4ff
-    });
-  </script>
+  <div class="texto2">
+    <h2>O primeiro modelo de inteligência artificial de alto nível desenvolvido no Brasil</h2>
+    <p>
+      Estamos diante de um marco histórico para a tecnologia nacional: o lançamento do primeiro modelo de inteligência artificial de alto desempenho criado inteiramente no Brasil.
+      Este avanço representa não apenas um salto significativo no campo da inovação e da ciência, mas também demonstra a crescente capacidade técnica e intelectual do país em áreas estratégicas da tecnologia da informação.<br><br>
+      Desenvolvido com base em tecnologias de ponta e adaptado às necessidades e particularidades do cenário brasileiro, este modelo de IA coloca o Brasil em posição de destaque no cenário internacional.
+      É um passo decisivo rumo à soberania tecnológica, à valorização do conhecimento local e à consolidação do país como protagonista na construção de soluções inteligentes, éticas e alinhadas com os interesses nacionais.<br><br>
+      Este feito reforça o compromisso do Brasil com o avanço tecnológico e abre portas para o desenvolvimento de novas aplicações em áreas como saúde, educação, segurança, agricultura, atendimento ao cidadão e muito mais — tudo impulsionado por inteligência artificial criada por brasileiros, para os brasileiros e para o mundo.
+    </p>
+  </div>
+
+  <div class="testarIa">
+     <canvas id="projector">Your browser does not support the Canvas element.</canvas>
+    <h2>🤖 Experimente o futuro com a IA 100% Brasileira</h2>
+<form action="/ir-login">
+    <button class="ai-button-glow">QUERO TESTAR</button>
+    </form>
+  </div>
+<script>
+  var ParticleEngine = (function() {
+	'use strict';
+
+	function ParticleEngine(canvas_id) {
+		// enforces new
+		if (!(this instanceof ParticleEngine)) {
+			return new ParticleEngine(args);
+		}
+		
+		var _ParticleEngine = this;
+
+		this.canvas_id = canvas_id;
+		this.stage = new createjs.Stage(canvas_id);
+		this.totalWidth = this.canvasWidth = document.getElementById(canvas_id).width = document.getElementById(canvas_id).offsetWidth;
+		this.totalHeight = this.canvasHeight = document.getElementById(canvas_id).height = document.getElementById(canvas_id).offsetHeight;
+		this.compositeStyle = "lighter";
+
+		this.particleSettings = [{id:"small", num:300, fromX:0, toX:this.totalWidth, ballwidth:3, alphamax:0.4, areaHeight:.5, color:"#F0F0F0", fill:false}, 
+								{id:"medium", num:100, fromX:0, toX:this.totalWidth,  ballwidth:8, alphamax:0.3, areaHeight:1, color:"#C0C0C0", fill:true}, 
+								{id:"large", num:10, fromX:0, toX:this.totalWidth, ballwidth:30,  alphamax:0.2, areaHeight:1, color:"#A0A0A0", fill:true}];
+		this.particleArray = [];
+		this.lights = [{ellipseWidth:400, ellipseHeight:100, alpha:0.6, offsetX:0, offsetY:0, color:"#D0D0D0"}, 
+						{ellipseWidth:350, ellipseHeight:250, alpha:0.3, offsetX:-50, offsetY:0, color:"#B8B8B8"}, 
+						{ellipseWidth:100, ellipseHeight:80, alpha:0.2, offsetX:80, offsetY:-50, color:"#F8F8F8"}];
+
+		this.stage.compositeOperation = _ParticleEngine.compositeStyle;
+
+
+		function drawBgLight()
+		{
+			var light;
+			var bounds;
+			var blurFilter;
+			for (var i = 0, len = _ParticleEngine.lights.length; i < len; i++) {				
+				light = new createjs.Shape();
+				light.graphics.beginFill(_ParticleEngine.lights[i].color).drawEllipse(0, 0, _ParticleEngine.lights[i].ellipseWidth, _ParticleEngine.lights[i].ellipseHeight);
+				light.regX = _ParticleEngine.lights[i].ellipseWidth/2;
+				light.regY = _ParticleEngine.lights[i].ellipseHeight/2; 
+				light.y = light.initY = _ParticleEngine.totalHeight/2 + _ParticleEngine.lights[i].offsetY;
+				light.x = light.initX =_ParticleEngine.totalWidth/2 + _ParticleEngine.lights[i].offsetX;
+
+				blurFilter = new createjs.BlurFilter(_ParticleEngine.lights[i].ellipseWidth, _ParticleEngine.lights[i].ellipseHeight, 1);
+				bounds = blurFilter.getBounds();
+				light.filters = [blurFilter];
+				light.cache(bounds.x-_ParticleEngine.lights[i].ellipseWidth/2, bounds.y-_ParticleEngine.lights[i].ellipseHeight/2, bounds.width*2, bounds.height*2);
+				light.alpha = _ParticleEngine.lights[i].alpha;
+
+				light.compositeOperation = "screen";
+				_ParticleEngine.stage.addChildAt(light, 0);
+
+				_ParticleEngine.lights[i].elem = light;
+			}
+
+			TweenMax.fromTo(_ParticleEngine.lights[0].elem, 10, {scaleX:1.5, x:_ParticleEngine.lights[0].elem.initX, y:_ParticleEngine.lights[0].elem.initY},{yoyo:true, repeat:-1, ease:Power1.easeInOut, scaleX:2, scaleY:0.7});
+			TweenMax.fromTo(_ParticleEngine.lights[1].elem, 12, { x:_ParticleEngine.lights[1].elem.initX, y:_ParticleEngine.lights[1].elem.initY},{delay:5, yoyo:true, repeat:-1, ease:Power1.easeInOut, scaleY:2, scaleX:2, y:_ParticleEngine.totalHeight/2-50, x:_ParticleEngine.totalWidth/2+100});
+			TweenMax.fromTo(_ParticleEngine.lights[2].elem, 8, { x:_ParticleEngine.lights[2].elem.initX, y:_ParticleEngine.lights[2].elem.initY},{delay:2, yoyo:true, repeat:-1, ease:Power1.easeInOut, scaleY:1.5, scaleX:1.5, y:_ParticleEngine.totalHeight/2, x:_ParticleEngine.totalWidth/2-200});
+		}
+		
+		var blurFilter;
+		function drawParticles(){
+
+			for (var i = 0, len = _ParticleEngine.particleSettings.length; i < len; i++) {
+				var ball = _ParticleEngine.particleSettings[i];
+
+				var circle;
+				for (var s = 0; s < ball.num; s++ )
+				{
+					circle = new createjs.Shape();
+					if(ball.fill){
+						circle.graphics.beginFill(ball.color).drawCircle(0, 0, ball.ballwidth);
+						blurFilter = new createjs.BlurFilter(ball.ballwidth/2, ball.ballwidth/2, 1);
+						circle.filters = [blurFilter];
+						var bounds = blurFilter.getBounds();
+						circle.cache(-50+bounds.x, -50+bounds.y, 100+bounds.width, 100+bounds.height);
+					}else{
+						circle.graphics.beginStroke(ball.color).setStrokeStyle(1).drawCircle(0, 0, ball.ballwidth);
+					}
+					
+					circle.alpha = range(0, 0.1);
+					circle.alphaMax = ball.alphamax;
+					circle.distance = ball.ballwidth * 2;
+					circle.ballwidth = ball.ballwidth;
+					circle.flag = ball.id;
+					_ParticleEngine.applySettings(circle, ball.fromX, ball.toX, ball.areaHeight);
+					circle.speed = range(2, 10);
+					circle.y = circle.initY;
+					circle.x = circle.initX;
+					circle.scaleX = circle.scaleY = range(0.3, 1);
+
+					_ParticleEngine.stage.addChild(circle);
+					
+
+					animateBall(circle);
+
+					_ParticleEngine.particleArray.push(circle);
+				}
+			}	
+		}
+
+		this.applySettings = function(circle, positionX, totalWidth, areaHeight)
+		{
+			circle.speed = range(1, 3);
+			circle.initY = weightedRange(0, _ParticleEngine.totalHeight , 1, [_ParticleEngine.totalHeight * (2-areaHeight/2)/4, _ParticleEngine.totalHeight*(2+areaHeight/2)/4], 0.8 );
+			circle.initX = weightedRange(positionX, totalWidth, 1, [positionX+ ((totalWidth-positionX))/4, positionX+ ((totalWidth-positionX)) * 3/4], 0.6);
+		}
+
+		function animateBall(ball)
+		{
+			var scale = range(0.3, 1);
+			var xpos = range(ball.initX - ball.distance, ball.initX + ball.distance);
+			var ypos = range(ball.initY - ball.distance, ball.initY + ball.distance);
+			var speed = ball.speed;
+			TweenMax.to(ball, speed, {scaleX:scale, scaleY:scale, x:xpos, y:ypos, onComplete:animateBall, onCompleteParams:[ball], ease:Cubic.easeInOut});	
+			TweenMax.to(ball, speed/2, {alpha:range(0.1, ball.alphaMax), onComplete:fadeout, onCompleteParams:[ball, speed]});	
+		}	
+
+		function fadeout(ball, speed)
+		{
+			ball.speed = range(2, 10);
+			TweenMax.to(ball, speed/2, {alpha:0 });
+		}
+
+		drawBgLight();
+		drawParticles();
+	}
+
+	ParticleEngine.prototype.render = function()
+	{
+		this.stage.update();
+	}
+
+	ParticleEngine.prototype.resize = function()
+	{
+		this.totalWidth = this.canvasWidth = document.getElementById(this.canvas_id).width = document.getElementById(this.canvas_id).offsetWidth;
+		this.totalHeight = this.canvasHeight = document.getElementById(this.canvas_id).height = document.getElementById(this.canvas_id).offsetHeight;
+		this.render();
+
+		for (var i= 0, length = this.particleArray.length; i < length; i++)
+		{
+			this.applySettings(this.particleArray[i], 0, this.totalWidth, this.particleArray[i].areaHeight);
+		}
+
+		for (var j = 0, len = this.lights.length; j < len; j++) {
+			this.lights[j].elem.initY = this.totalHeight/2 + this.lights[j].offsetY;
+			this.lights[j].elem.initX =this.totalWidth/2 + this.lights[j].offsetX;
+			TweenMax.to(this.lights[j].elem, .5, {x:this.lights[j].elem.initX, y:this.lights[j].elem.initY});			
+		}
+	}
+
+	return ParticleEngine;
+
+}());
+
+
+////////////////////////UTILS//////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+function range(min, max)
+{
+	return min + (max - min) * Math.random();
+}
+		
+function round(num, precision)
+{
+   var decimal = Math.pow(10, precision);
+   return Math.round(decimal* num) / decimal;
+}
+
+function weightedRange(to, from, decimalPlaces, weightedRange, weightStrength)
+{
+	if (typeof from === "undefined" || from === null) { 
+	    from = 0; 
+	}
+	if (typeof decimalPlaces === "undefined" || decimalPlaces === null) { 
+	    decimalPlaces = 0; 
+	}
+	if (typeof weightedRange === "undefined" || weightedRange === null) { 
+	    weightedRange = 0; 
+	}
+	if (typeof weightStrength === "undefined" || weightStrength === null) { 
+	    weightStrength = 0; 
+	}
+
+   var ret
+   if(to == from){return(to);}
+ 
+   if(weightedRange && Math.random()<=weightStrength){
+	  ret = round( Math.random()*(weightedRange[1]-weightedRange[0]) + weightedRange[0], decimalPlaces )
+   }else{
+	  ret = round( Math.random()*(to-from)+from, decimalPlaces )
+   }
+   return(ret);
+}
+
+///////////////// RUN CODE //////////////////////////
+//////////////////////////////////////////////////////
+
+var particles
+(function(){
+	particles = new ParticleEngine('projector');
+	createjs.Ticker.addEventListener("tick", updateCanvas);
+	window.addEventListener('resize', resizeCanvas, false);
+
+	function updateCanvas(){
+		particles.render();
+	}
+
+	function resizeCanvas(){
+		particles.resize();
+	}
+}());
+</script>
 </body>
 </html>

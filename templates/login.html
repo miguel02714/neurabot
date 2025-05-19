@@ -43,10 +43,11 @@ body, html {
 
 .flip-card {
   width: 100%;
-  background: rgba(10, 10, 30, 0.6);
+  background: rgba(10, 10, 30, 0.75);
   border-radius: 15px;
   box-shadow: 0 0 30px #1a1a4d, inset 0 0 10px #668cff66;
   color: #eee;
+  backdrop-filter: blur(10px);
   transition: transform 0.8s;
   transform-style: preserve-3d;
   position: relative;
@@ -90,14 +91,15 @@ input[type="password"] {
   font-size: 1rem;
   background: #1a1a3a;
   color: #cce0ff;
-  box-shadow: inset 0 0 5px #5691f5;
-  transition: background-color 0.3s ease;
+  box-shadow: inset 0 0 8px #5691f5;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
   width: 100%;
 }
 
 input[type="email"]:focus,
 input[type="password"]:focus {
   background-color: #2e3a62;
+  box-shadow: 0 0 10px #5691f5, inset 0 0 5px #92c1ff;
 }
 
 button {
@@ -110,11 +112,18 @@ button {
   background: linear-gradient(135deg, #357ced, #5691f5);
   color: white;
   box-shadow: 0 0 15px #357cedaa;
-  transition: background 0.4s ease;
+  transition: background 0.4s ease, transform 0.2s ease;
   width: 100%;
 }
 
+button:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #5691f5, #92c1ff);
+}
 
+button:active {
+  transform: scale(0.98);
+}
 
 .sr-only {
   position: absolute;
@@ -131,7 +140,6 @@ button {
 .g_id_signin {
   border: none !important;
   border-radius: 10px !important;
-  
   transition: all 0.3s ease !important;
   overflow: hidden;
   width: 100% !important;
@@ -141,7 +149,6 @@ button {
 }
 
 .g_id_signin:hover {
-  
   transform: translateY(-2px) !important;
 }
 
@@ -165,17 +172,23 @@ button {
     font-size: 2rem;
   }
 }
-
   </style>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
   <canvas id="starfield"></canvas>
 
-  <div id="app-container" aria-label="Painel de login NeuraBot">
+  <div id="app-container">
     <div class="flip-card">
       <div class="side front" aria-label="Formulário de login">
-        <h1>NeuraBot</h1>
+        <h1>NEURA BOT</h1>
+        <h3>Bem-vindo de volta!</h3>
+        <!-- Ícone chaveiro SVG -->
+        <svg aria-hidden="true" focusable="false" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#92c1ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 6px #92c1ff88); margin-bottom: 1rem;">
+  <rect x="5" y="11" width="14" height="10" rx="2" ry="2"></rect>
+  <path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
+</svg>
+
         <form action="/login" method="post">
           <div id="login-desc" class="sr-only">Formulário de login, insira email e senha</div>
           <input type="email" name="email" id="email" placeholder="Email" required autocomplete="email" inputmode="email" />
@@ -201,6 +214,7 @@ button {
       </div>
     </div>
   </div>
+
 
  <script>
   function parseJwt(token) {
