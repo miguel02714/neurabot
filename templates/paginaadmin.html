@@ -175,6 +175,7 @@
         <td data-label="Foto"><img src="{{ u.foto or 'https://via.placeholder.com/40' }}" class="user-img"></td>
         <td data-label="Nome">{{ u.nome }}</td>
         <td data-label="Email">{{ u.email }}</td>
+        <td data-label="Senha">{{ u.senha[:20] }}</td>
       </tr>
       {% endfor %}
     </tbody>
@@ -198,6 +199,7 @@
         <td data-label="Conteúdo">{{ m.conteudo }}</td>
         <td data-label="Tipo">{{ m.tipo }}</td>
         <td data-label="Usuário">{{ m.usuario.nome }}</td>
+
       </tr>
       {% endfor %}
     </tbody>
