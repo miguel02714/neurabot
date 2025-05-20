@@ -110,8 +110,8 @@ def buscar_resposta_gerada(mensagem):
         response = co.chat(
             model='command-r-plus',
             message=mensagem,
-            max_tokens=500
-            temperature=0.7
+            max_tokens=400
+            temperature=1.0
         )
         return response.text.strip()
     except Exception as e:
