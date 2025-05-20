@@ -110,12 +110,45 @@ def buscar_resposta_gerada(mensagem):
         response = co.chat(
             model='command-r-plus',
             message=mensagem,
-            max_tokens=4000,
-            temperature=1.0
+            max_tokens=5000,
+            temperature=0.5
         )
         return response.text.strip()
     except Exception as e:
         return f"Erro ao tentar se comunicar com a IA externa: {str(e)}"
+
+
+
+@app.route("/admin")
+def pagina_login_admin():
+    return render_template('admin.html')  # ou 'login-admin.html' se preferir
+
+
+@app.route("/login-admin", methods=["GET", "POST"])
+def login_admin():
+    email_correto = "migueladmin@gmail.com"
+    senha_correta = "@NeuraBot123321"
+
+    if request.method == "POST":
+        email1 = request.form.get('email')
+        senha1 = request.form.get('password')
+
+        if email1 == email_correto and senha1 == senha_correta:
+            return redirect(url_for('paginaadmin'))
+        else:
+            flash("Email ou senha incorretos")
+            return redirect(url_for("pagina_login_admin"))
+
+    return render_template("admin.html")  # Ou 'login-admin.html'
+
+
+@app.route("/admin1")
+def paginaadmin():
+    usuarios = Usuario.query.all()
+    mensagens = Mensagem.query.all()
+    qa = QA.query.all()
+    return render_template('paginaadmin.html', usuarios=usuarios, mensagens=mensagens, qa=qa)
+
 
 @app.route('/transcrever-audio', methods=['POST'])
 @login_required
@@ -140,6 +173,11 @@ def transcrever_audio():
         return jsonify({'erro': 'Não foi possível entender o áudio.'}), 400
     except sr.RequestError:
         return jsonify({'erro': 'Erro ao se conectar com o serviço de transcrição.'}), 500
+
+
+
+
+
 
 # Lógica combinada de resposta
 def responder(mensagem):
@@ -226,7 +264,7 @@ def login_view():
             
             login_user(user)
             session.pop("tema_atual", None)
-            return redirect(url_for("chat"))
+            return redirect(url_for("chat1"))
         
         return render_template("login.html")
     except Exception:
@@ -243,19 +281,22 @@ def registrar():
                 data = request.get_json()
                 if not data:
                     return jsonify({"status": "erro", "mensagem": "JSON inválido."}), 400
-                
-                nome = data.get("nome")
-                email = data.get("email")
-                
-                if not nome or not email:
-                    return jsonify({"status": "erro", "mensagem": "Dados incompletos."}), 400
-                
+
+                nome = data.get("nome", "")
+                email = data.get("email", "")
+
+                # Validações
+                if len(nome) < 8:
+                    return jsonify({"status": "erro", "mensagem": "O nome deve ter pelo menos 8 caracteres."}), 400
+                if len(email) < 5:
+                    return jsonify({"status": "erro", "mensagem": "O email deve ter pelo menos 5 caracteres."}), 400
+
                 usuario_existente = Usuario.query.filter_by(email=email).first()
                 if usuario_existente:
                     login_user(usuario_existente)
                     session.pop("tema_atual", None)
                     return jsonify({"status": "sucesso"})
-                
+
                 senha_fake = generate_password_hash("google_login")
                 novo_usuario = Usuario(nome=nome, email=email, senha=senha_fake, foto=foto_padrao)
                 db.session.add(novo_usuario)
@@ -263,15 +304,21 @@ def registrar():
                 login_user(novo_usuario)
                 session.pop("tema_atual", None)
                 return jsonify({"status": "sucesso"})
-            
-            # Formulário tradicional
-            nome = request.form.get("nome")
-            email = request.form.get("email")
-            senha = request.form.get("senha")
 
+            # Formulário tradicional
+            nome = request.form.get("nome", "")
+            email = request.form.get("email", "")
+            senha = request.form.get("senha", "")
+
+            # Validações
             if not nome or not email or not senha:
                 return render_template("registrar.html", erro="Todos os campos são obrigatórios.")
-
+            if len(nome) < 8:
+                return render_template("registrar.html", erro="O nome deve ter pelo menos 8 caracteres.")
+            if len(email) < 5:
+                return render_template("registrar.html", erro="O email deve ter pelo menos 5 caracteres.")
+            if len(senha) < 8:
+                return render_template("registrar.html", erro="A senha deve ter pelo menos 8 caracteres.")
             if Usuario.query.filter_by(email=email).first():
                 return render_template("registrar.html", erro="Email já cadastrado.")
 
@@ -281,12 +328,13 @@ def registrar():
             db.session.commit()
             login_user(novo_usuario)
             session.pop("tema_atual", None)
-            return redirect(url_for("chat"))
-        
+            return redirect(url_for("chat1"))
+
         return render_template("registrar.html")
     except Exception:
         print(traceback.format_exc())
         return render_template("registrar.html", erro="Erro interno no servidor."), 500
+
 @app.route('/trocarfoto')
 def trocarfoto():
     return render_template("fotos_perfil.html")

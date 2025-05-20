@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel Admin - NeuraBot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #0f172a;
+      color: #cbd5e1;
+    }
+
+    nav {
+      background-color: #1e293b;
+      padding: 1rem 2rem;
+      color: #ffffff;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    nav h1 {
+      font-size: 1.3rem;
+      margin: 0;
+    }
+
+    .container {
+      padding: 1rem;
+    }
+
+    h2 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      color: #ffffff;
+      font-size: 1.2rem;
+    }
+
+    .search-bar {
+      margin-bottom: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .search-bar input {
+      padding: 8px;
+      border-radius: 4px;
+      border: none;
+      width: 100%;
+      max-width: 250px;
+    }
+
+    .btn {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      background-color: #3b82f6;
+      color: white;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #2563eb;
+    }
+
+    .toggle-btn {
+      margin-bottom: 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #1e293b;
+      border: 1px solid #334155;
+      margin-bottom: 2rem;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      border: 1px solid #334155;
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #334155;
+      color: #f1f5f9;
+    }
+
+    img.user-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    /* Responsivo - Mobile */
+    @media (max-width: 768px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tbody tr {
+        margin-bottom: 1rem;
+        border: 1px solid #334155;
+        border-radius: 8px;
+        padding: 10px;
+        background-color: #1e293b;
+      }
+
+      td {
+        border: none;
+        padding: 6px 0;
+        position: relative;
+      }
+
+      td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        top: 6px;
+        font-weight: bold;
+        color: #94a3b8;
+      }
+
+      td {
+        padding-left: 120px;
+      }
+
+      img.user-img {
+        width: 35px;
+        height: 35px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <h1>NeuraBot - Painel Admin</h1>
+  <span>Administrador</span>
+</nav>
+
+<div class="container">
+
+  <h2>Usuários Registrados</h2>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Buscar por nome ou email...">
+    <button class="btn" onclick="procurarUsuario()">Buscar</button>
+    <button class="btn toggle-btn" onclick="toggleSection('usuarios-tbody')">Mostrar/Ocultar</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Foto</th>
+        <th>Nome</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody id="usuarios-tbody">
+      {% for u in usuarios %}
+      <tr>
+        <td data-label="ID">{{ u.id }}</td>
+        <td data-label="Foto"><img src="{{ u.foto or 'https://via.placeholder.com/40' }}" class="user-img"></td>
+        <td data-label="Nome">{{ u.nome }}</td>
+        <td data-label="Email">{{ u.email }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h2>Mensagens</h2>
+  <button class="btn toggle-btn" onclick="toggleSection('mensagens-tbody')">Mostrar/Ocultar</button>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Conteúdo</th>
+        <th>Tipo</th>
+        <th>Usuário</th>
+      </tr>
+    </thead>
+    <tbody id="mensagens-tbody">
+      {% for m in mensagens %}
+      <tr>
+        <td data-label="ID">{{ m.id }}</td>
+        <td data-label="Conteúdo">{{ m.conteudo }}</td>
+        <td data-label="Tipo">{{ m.tipo }}</td>
+        <td data-label="Usuário">{{ m.usuario.nome }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h2>Perguntas e Respostas (QA)</h2>
+  <button class="btn toggle-btn" onclick="toggleSection('qa-tbody')">Mostrar/Ocultar</button>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Pergunta</th>
+        <th>Resposta</th>
+      </tr>
+    </thead>
+    <tbody id="qa-tbody">
+      {% for q in qa %}
+      <tr>
+        <td data-label="ID">{{ q.id }}</td>
+        <td data-label="Pergunta">{{ q.pergunta }}</td>
+        <td data-label="Resposta">{{ q.resposta }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+</div>
+
+<script>
+  function toggleSection(id) {
+    const section = document.getElementById(id);
+    section.style.display = section.style.display === 'none' ? 'table-row-group' : 'none';
+  }
+
+  function procurarUsuario() {
+    const input = document.getElementById("searchInput").value.toLowerCase();
+    const rows = document.querySelectorAll("#usuarios-tbody tr");
+
+    rows.forEach(row => {
+      const nome = row.children[2].textContent.toLowerCase();
+      const email = row.children[3].textContent.toLowerCase();
+      if (nome.includes(input) || email.includes(input)) {
+        row.style.display = "";
+      } else {
+        row.style.display = "none";
+      }
+    });
+  }
+</script>
+
+</body>
+</html>

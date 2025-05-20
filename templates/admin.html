@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ADMIN</title>
+<style>
+  /* Reset & basics */
+  * {
+    margin: 0; padding: 0; box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  body, html {
+    height: 100%;
+    background: #f0f2f5;
+    overflow-x: hidden;
+  }
+
+  /* Sidebar styles */
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 100vh;
+    width: 250px;
+    background: #4f46e5;
+    color: white;
+    padding: 2rem 1.5rem;
+    box-shadow: 2px 0 15px rgba(79, 70, 229, 0.5);
+    transform: translateX(-260px);
+    transition: transform 0.4s ease;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+  .sidebar h2 {
+    margin-bottom: 2rem;
+    font-weight: 700;
+  }
+
+  .sidebar a {
+    color: white;
+    text-decoration: none;
+    margin-bottom: 1.2rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: color 0.3s ease;
+  }
+
+  .sidebar a:hover {
+    color: #a78bfa;
+  }
+
+  /* Toggle button */
+  .toggle-btn {
+    position: fixed;
+    top: 20px; left: 20px;
+    background: #4f46e5;
+    border: none;
+    color: white;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.4rem;
+    box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
+    z-index: 1100;
+    transition: background 0.3s ease;
+  }
+
+  .toggle-btn:hover {
+    background: #7c3aed;
+  }
+
+  /* Login form container */
+  .login-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+  }
+
+  .login-form {
+    background: white;
+    padding: 3rem 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .login-form h2 {
+    margin-bottom: 2rem;
+    color: #4f46e5;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1.8px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+  }
+
+  .form-group input:focus {
+    outline: none;
+    border-color: #7c3aed;
+    box-shadow: 0 0 6px #a78bfa;
+  }
+
+  button.login-btn {
+    width: 100%;
+    padding: 0.9rem;
+    background: #4f46e5;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 8px 15px rgba(79, 70, 229, 0.5);
+    transition: background 0.3s ease;
+  }
+
+  button.login-btn:hover {
+    background: #7c3aed;
+  }
+
+  /* Responsive tweaks */
+  @media (max-width: 480px) {
+    .login-form {
+      padding: 2rem 1.5rem;
+      width: 90%;
+    }
+    .toggle-btn {
+      font-size: 1.2rem;
+      padding: 0.5rem 0.8rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<button class="toggle-btn" id="toggleBtn">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <h2>Menu</h2>
+  <a href="#">Home</a>
+  <a href="#">Features</a>
+  <a href="#">Pricing</a>
+  <a href="#">About</a>
+  <a href="#">Contact</a>
+</div>
+
+<div class="login-container">
+  <form action="/login-admin" method="post">
+    <h2>Login</h2>
+    <div class="form-group">
+      <label for="email">Email Address</label>
+      <input type="email" name="email" id="email" required placeholder="you@example.com" />
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" name="password" id="password" required placeholder="Enter your password" />
+    </div>
+    <button type="submit" class="login-btn">Sign In</button>
+  </form>
+</div>
+
+<script>
+  const toggleBtn = document.getElementById('toggleBtn');
+  const sidebar = document.getElementById('sidebar');
+
+  toggleBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('active');
+  });
+
+  // Optional: close sidebar when clicking outside on small screens
+  document.addEventListener('click', (e) => {
+    if (!sidebar.contains(e.target) && !toggleBtn.contains(e.target)) {
+      sidebar.classList.remove('active');
+    }
+  });
+
+
+</script>
+
+</body>
+</html>
+            
