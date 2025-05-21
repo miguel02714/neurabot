@@ -7,6 +7,3 @@ python-dotenv==1.0.1
 gunicorn==21.2.0
 cohere==4.44
 google-auth==2.20.0
-
-SpeechRecognition==3.8.1
-pydub==0.25.1

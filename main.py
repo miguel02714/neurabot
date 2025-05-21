@@ -314,8 +314,8 @@ def registrar():
             # Validações
             if not nome or not email or not senha:
                 return render_template("registrar.html", erro="Todos os campos são obrigatórios.")
-            if len(nome) < 8:
-                return render_template("registrar.html", erro="O nome deve ter pelo menos 8 caracteres.")
+            if len(nome) < 3:
+                return render_template("registrar.html", erro="O nome deve ter pelo menos 3 caracteres.")
             if len(email) < 5:
                 return render_template("registrar.html", erro="O email deve ter pelo menos 5 caracteres.")
             if len(senha) < 8:
@@ -468,6 +468,12 @@ def foto13():
 @app.route("/logout", methods=["POST"])
 @login_required
 def logout():
+    logout_user()
+    session.pop('tema_atual', None)
+    return redirect(url_for("login_view"))
+@app.route("/logout1", methods=["POST"])
+@login_required
+def logout1():
     logout_user()
     session.pop('tema_atual', None)
     return redirect(url_for("login_view"))

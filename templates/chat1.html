@@ -101,7 +101,7 @@ p {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  width: 50%;
+  width: 60%;
   align-items: center;
   margin-left: auto;
   margin-right: auto;
@@ -302,7 +302,18 @@ p {
   .config {
     font-size: 26px;
   }
-
+#chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 90%;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+ 
+}
   .perfil1 {
     width: 40px;
     height: 40px;
@@ -653,7 +664,7 @@ var particles
       <form action="/ir-perfil">
       <li><button class="button1" type="submit">Perfil</button></li>
       </form>
-      <form action="/logout">
+      <form action="/logout1">
       <li> <button class="button1" type="submit">Sair</button></li>
       </form>
     </ul>
@@ -666,7 +677,7 @@ var particles
 <p class="mensagem-orientacao">Olá {{ nome_usuario }}, Como posso ajudar?</p>
     <div class="text" id="input-area">
   <input class="digitar" type="text" name="" id="user-input" placeholder="Digite uma mensagem...">
-  <button id="send-btn" class="enviar">.</button>
+  <button id="send-btn" class="enviar">></button>
   
 </div>
   </div>
