@@ -420,6 +420,16 @@ p {
 	background-attachment: absolute
 }
 
+.message.typing {
+  font-style: italic;
+  opacity: 0.7;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
 
   </style>
 </head>
@@ -664,7 +674,7 @@ var particles
       <form action="/ir-perfil">
       <li><button class="button1" type="submit">Perfil</button></li>
       </form>
-      <form action="/logout1">
+      <form action="/logout1" method="post">
       <li> <button class="button1" type="submit">Sair</button></li>
       </form>
     </ul>
@@ -681,9 +691,7 @@ var particles
   
 </div>
   </div>
-  <script>
-  // seu código existente aqui...
-
+ <script>
   const botaoComeco = document.getElementById('comeco');
 
   botaoComeco.addEventListener('click', () => {
@@ -693,8 +701,8 @@ var particles
     });
   });
 </script>
-<script>
 
+<script>
   const chatMessages = document.getElementById('chat-messages');
   const userInput = document.getElementById('user-input');
   const sendBtn = document.getElementById('send-btn');
@@ -746,18 +754,37 @@ var particles
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
 
-  // Função para enviar mensagem ao servidor
+  // Mostra a animação "Digitando..."
+  function showTypingIndicator() {
+    const typingDiv = document.createElement('div');
+    typingDiv.classList.add('message', 'ai', 'typing');
+    typingDiv.setAttribute('id', 'typing-indicator');
+    typingDiv.textContent = 'Digitando...';
+    chatMessages.appendChild(typingDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  // Remove a animação "Digitando..."
+  function removeTypingIndicator() {
+    const typingDiv = document.getElementById('typing-indicator');
+    if (typingDiv) {
+      typingDiv.remove();
+    }
+  }
+
+  // Função para enviar mensagem
   function sendMessage() {
     const message = userInput.value.trim();
     if (!message) return;
 
-    // Esconde mensagem de orientação (se existir)
     if (mensagemOrientacao) {
       mensagemOrientacao.style.display = "none";
     }
 
     appendMessage(message, true);
     userInput.value = '';
+
+    showTypingIndicator(); // Mostra "Digitando..."
 
     fetch('/chat1', {
       method: 'POST',
@@ -766,12 +793,14 @@ var particles
     })
     .then(response => response.json())
     .then(data => {
+      removeTypingIndicator(); // Remove "Digitando..."
       const resposta = data.response || "Erro ao obter resposta.";
       const imageUrl = data.image_url || null;
       appendMessage(resposta, false, imageUrl);
     })
     .catch(error => {
       console.error('Erro:', error);
+      removeTypingIndicator(); // Remove mesmo em erro
       appendMessage('Erro ao se comunicar com o servidor.', false);
     });
   }
