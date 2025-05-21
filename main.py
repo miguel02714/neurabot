@@ -129,7 +129,7 @@ def login_admin():
     email_correto = "migueladmin@gmail.com"
     senha_correta = "@NeuraBot123321"
 
-    if request.method == "POST":
+    if request.method == "GET":
         email1 = request.form.get('email')
         senha1 = request.form.get('password')
 
@@ -287,8 +287,8 @@ def registrar():
                 email = data.get("email", "")
 
                 # Validações
-                if len(nome) < 8:
-                    return jsonify({"status": "erro", "mensagem": "O nome deve ter pelo menos 8 caracteres."}), 400
+                if len(nome) < 3
+                    return jsonify({"status": "erro", "mensagem": "O nome deve ter pelo menos 3 caracteres."}), 400
                 if len(email) < 5:
                     return jsonify({"status": "erro", "mensagem": "O email deve ter pelo menos 5 caracteres."}), 400
 
