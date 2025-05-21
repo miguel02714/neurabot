@@ -407,7 +407,7 @@ def foto6():
 @app.route('/foto7', methods=["POST"])
 @login_required
 def foto7():
-    foto_url = 'https://sdmntprwestus.oaiusercontent.com/files/00000000-58fc-6230-b83a-65c712505fb0/raw?se=2025-05-21T00%3A44%3A24Z&sp=r&sv=2024-08-04&sr=b&scid=6de16689-2ee8-5e43-b5be-28f7518960a2&skoid=1e6af1bf-6b08-4a04-8919-15773e7e7024&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-20T22%3A52%3A52Z&ske=2025-05-21T22%3A52%3A52Z&sks=b&skv=2024-08-04&sig=3lHexWlcvQHhyrFePlxQrZSesBfHZNcrtIkjo%2Bl9m2s%3D'
+    foto_url = 'https://th.bing.com/th/id/OIP.w2sUgXjQUVVeqBGqPKKtAQHaHa?pid=ImgDet&w=183&h=183&c=7'
     
     current_user.foto = foto_url
     db.session.commit()
@@ -415,7 +415,7 @@ def foto7():
 @app.route('/foto8', methods=["POST"])
 @login_required
 def foto8():
-    foto_url = 'https://sdmntpreastus.oaiusercontent.com/files/00000000-9dc8-61f9-8bf6-b4f36478e464/raw?se=2025-05-21T00%3A44%3A24Z&sp=r&sv=2024-08-04&sr=b&scid=046d08f6-df2f-5af1-9c5c-1eaba9acae4f&skoid=1e6af1bf-6b08-4a04-8919-15773e7e7024&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-20T23%3A00%3A00Z&ske=2025-05-21T23%3A00%3A00Z&sks=b&skv=2024-08-04&sig=0gJG/WloYJIBOyenu6Z7ZVfKYVyaYCrRU1F3%2BGHUerA%3D'
+    foto_url = 'https://th.bing.com/th/id/OIP.J8L2JyjxqdXNt3vwK1zTigAAAA?pid=ImgDet&w=206&h=206&c=7'
     
     current_user.foto = foto_url
     db.session.commit()
