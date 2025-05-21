@@ -110,7 +110,7 @@ def buscar_resposta_gerada(mensagem):
         response = co.chat(
             model='command-r-plus',
             message=mensagem,
-            max_tokens=5000,
+            max_tokens=500,
             temperature=0.5
         )
         return response.text.strip()
@@ -399,10 +399,70 @@ def foto5():
 @app.route('/foto6', methods=["POST"])
 @login_required
 def foto6():
-    foto_url = 'https://img.freepik.com/fotos-premium/ilustracao-3d-de-avatar-ou-perfil-de-personagem-de-desenho-animado_1183071-150.jpg'
+    foto_url = 'https://th.bing.com/th/id/OIP.N3e3ZuWJ3KBUGb7hkBb3-AHaHa?pid=ImgDet&w=183&h=183&c=7'
     
     current_user.foto = foto_url
     db.session.commit()
+    return redirect(url_for('perfil'))
+@app.route('/foto7', methods=["POST"])
+@login_required
+def foto7():
+    foto_url = 'https://sdmntprwestus.oaiusercontent.com/files/00000000-58fc-6230-b83a-65c712505fb0/raw?se=2025-05-21T00%3A44%3A24Z&sp=r&sv=2024-08-04&sr=b&scid=6de16689-2ee8-5e43-b5be-28f7518960a2&skoid=1e6af1bf-6b08-4a04-8919-15773e7e7024&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-20T22%3A52%3A52Z&ske=2025-05-21T22%3A52%3A52Z&sks=b&skv=2024-08-04&sig=3lHexWlcvQHhyrFePlxQrZSesBfHZNcrtIkjo%2Bl9m2s%3D'
+    
+    current_user.foto = foto_url
+    db.session.commit()
+    return redirect(url_for('perfil'))
+@app.route('/foto8', methods=["POST"])
+@login_required
+def foto8():
+    foto_url = 'https://sdmntpreastus.oaiusercontent.com/files/00000000-9dc8-61f9-8bf6-b4f36478e464/raw?se=2025-05-21T00%3A44%3A24Z&sp=r&sv=2024-08-04&sr=b&scid=046d08f6-df2f-5af1-9c5c-1eaba9acae4f&skoid=1e6af1bf-6b08-4a04-8919-15773e7e7024&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-20T23%3A00%3A00Z&ske=2025-05-21T23%3A00%3A00Z&sks=b&skv=2024-08-04&sig=0gJG/WloYJIBOyenu6Z7ZVfKYVyaYCrRU1F3%2BGHUerA%3D'
+    
+    current_user.foto = foto_url
+    db.session.commit()
+    return redirect(url_for('perfil'))
+@app.route('/foto9', methods=["POST"])
+@login_required
+def foto9():
+    foto_url = 'https://th.bing.com/th/id/OIP.5eTzsiVmsszqm8ZoCYf5EwHaH7?w=150&h=180&c=7&r=0&o=5&pid=1.7'
+    
+    current_user.foto = foto_url
+    db.session.commit()
+    return redirect(url_for('perfil'))
+@app.route('/foto10', methods=["POST"])
+@login_required
+def foto10():
+    foto_url = 'data:image/jpeg;base64,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'
+    
+    current_user.foto = foto_url
+    db.session.commit()
+    return redirect(url_for('perfil'))
+@app.route('/foto11', methods=["POST"])
+@login_required
+def foto11():
+    foto_url = 'https://th.bing.com/th/id/OIP.W8rwPigJqoj0SRspu9Z7fwHaHa?pid=ImgDet&w=203&h=203&c=7'
+    
+    current_user.foto = foto_url
+    db.session.commit()
+    return redirect(url_for('perfil'))
+@app.route('/foto12', methods=["POST"])
+@login_required
+def foto12():
+    foto_url = 'https://th.bing.com/th/id/OIP.eXeJBLgT_ZZFuLE1Bg9f_AHaH4?rs=1&pid=ImgDetMain'
+    
+    current_user.foto = foto_url
+    db.session.commit()
+    
+    return redirect(url_for('perfil'))
+    
+@app.route('/foto13', methods=["POST"])
+@login_required
+def foto13():
+    foto_url = 'https://th.bing.com/th/id/OIP.S5IjzKgMMniuGdNQ1GDYJwHaHa?pid=ImgDet&w=203&h=203&c=7'
+    
+    current_user.foto = foto_url
+    db.session.commit()
+    
+
     
     return redirect(url_for('perfil'))
 @app.route("/logout", methods=["POST"])

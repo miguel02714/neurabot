@@ -48,11 +48,12 @@ body, html {
   box-shadow: 0 0 40px #1a1a4d, inset 0 0 15px #668cff90;
   transition: transform 0.8s;
   transform-style: preserve-3d;
-  padding: 2rem;
+  padding: 2px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  gap: 5px;
+  margin-bottom: 5px;
 }
 
 .side {
@@ -230,7 +231,7 @@ button:hover {
     const email = data.email;
     const foto = data.picture;
 
-    fetch("https://neurabot-zxkl.onrender.com/registrar", {
+    fetch("https://neurabot.shop/registrar", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

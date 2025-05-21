@@ -279,6 +279,7 @@
   position: relative;
   z-index: 1;
   animation: glow 2s infinite ease-in-out;
+  text-decoration: none;
 }
 
 @keyframes glow {
@@ -365,7 +366,7 @@
     <div class="neura">Neura Bot</div>
 
     <div class="buttons">
-      <form action="/ir-login">
+      <form action="/login">
       <button>Login</button>
       </form>
       <form action="/registrar">
@@ -406,9 +407,9 @@
   <div class="testarIa">
      <canvas id="projector">Your browser does not support the Canvas element.</canvas>
     <h2>🤖 Experimente o futuro com a IA 100% Brasileira</h2>
-<form action="/ir-registrar">
-    <button class="ai-button-glow">QUERO TESTAR</button>
-    </form>
+
+    <button class="ai-button-glow"><a href="https://neurabot.shop/registrar">QUERO TESTAR</a></button>
+    
   </div>
 <script>
   var ParticleEngine = (function() {
