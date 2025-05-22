@@ -317,65 +317,24 @@ header .title {
 }
 
 /* ================== RESPONSIVE ================== */
-@media (max-width: 768px) {
-  header {
+/* Tablets em modo retrato (768px a 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  #chat-container {
     padding: 1rem 1.5rem;
-    font-size: 1.25rem;
-  }
-
-  #toggle-sidebar {
-    font-size: 1.3rem;
-  }
-
-  #sidebar {
-    width: 200px;
-  }
-
-  #chat-container.with-sidebar {
-    margin-left: 0;
   }
 
   #input-area {
+    width: 100%;
+    margin-left: 0;
     flex-direction: column;
   }
 
-  .foto-perfil1 {
-    max-width: 80px;
-    max-height: 80px;
-  }
-}
-
-@media (max-width: 480px) {
-  header {
-    font-size: 1rem;
-    padding: 0.75rem 1.25rem;
-  }
-
   #sidebar {
-    padding: 0.5rem;
-  }
-
-  #chat-container {
+    width: 220px;
     padding: 1rem;
   }
-
-  #input-area input {
-    padding: 0.5rem;
-  }
-
-  .foto-perfil1 {
-    max-width: 70px;
-    max-height: 70px;
-  }
-
-  #sidebar ul li {
-    font-size: 0.9rem;
-  }
-
-  .message {
-    padding: 0.75rem 1rem;
-  }
 }
+
 
 </style>
 
