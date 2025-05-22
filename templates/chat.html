@@ -94,18 +94,23 @@ header .title {
 
 /* SIDEBAR */
 #sidebar {
+  display: none;
+  width: 250px;
+  background-color: transparent;
+  color: white;
+  padding: 20px;
   position: fixed;
   top: 0;
   left: 0;
-  width: 240px;
-  height: 100%;
-  background-color: transparent;
+  height: 90%;
+  margin-top: 60px;
+  z-index: 1000;
+  transition: 0.3s;
   
-  border-right: transparent;
-  padding: 2rem 1.5rem;
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
-  z-index: 90;
+}
+
+#sidebar.visible {
+  display: block;
 }
 
 
@@ -240,6 +245,8 @@ header .title {
   display: flex;
   gap: 1rem;
   padding-top: 0.5rem;
+  width: 1000px;
+  margin-left: 220px;
 }
 
 #input-area input {
@@ -387,7 +394,7 @@ header .title {
     </header>
 
     <div id="sidebar" class="hidden">
-        <h2>Perfil</h2>
+       
         <ul>
         <img class="foto-perfil1" src="{{ foto }}" alt="">
         <li>Configurações</li>
@@ -496,20 +503,24 @@ header .title {
       });
   }
 
-  // Sidebar toggle
-  const toggleBtn = document.getElementById("toggle-sidebar");
-  const sidebar = document.getElementById("sidebar");
+  // Garantir que tudo esteja carregado antes de adicionar eventos
+  document.addEventListener("DOMContentLoaded", () => {
+    const toggleBtn = document.getElementById("toggle-sidebar");
+    const sidebar = document.getElementById("sidebar");
 
-  toggleBtn.addEventListener("click", () => {
-    sidebar.classList.toggle("visible");
-  });
+    if (toggleBtn && sidebar) {
+      toggleBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("visible");
+      });
+    }
 
-  // Eventos de envio de mensagem
-  document.getElementById("send-btn").addEventListener("click", sendMessage);
-  document.getElementById("user-input").addEventListener("keypress", function (event) {
-    if (event.key === "Enter") sendMessage();
+    document.getElementById("send-btn").addEventListener("click", sendMessage);
+    document.getElementById("user-input").addEventListener("keypress", function (event) {
+      if (event.key === "Enter") sendMessage();
+    });
   });
 </script>
+
 
 
     </body>

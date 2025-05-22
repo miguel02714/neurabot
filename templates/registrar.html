@@ -181,6 +181,32 @@ button:hover {
     font-size: 2rem;
   }
 }
+select {
+  width: 100%;
+  max-width: 300px;
+  padding: 10px 14px;
+  font-size: 16px;
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+  background-color: #f9f9f9;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+select:focus {
+  outline: none;
+  border-color: #4f46e5; /* cor roxa elegante */
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+  background-color: #fff;
+  color: #000;
+  font-weight: 500;
+  cursor: pointer;
+}
 
   </style>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -198,6 +224,17 @@ button:hover {
         <input type="text" name="nome" id="nome" placeholder="Nome" required />
         <input type="email" name="email" id="email" placeholder="Email" required />
         <input type="password" name="senha" id="senha" placeholder="Senha" required />
+        <select name="estilo" id="estilo">
+  <option value="">Selecione um estilo de fala</option>
+  <option value="literario">Escritor Literário</option>
+  <option value="motivacional">Motivacional</option>
+  <option value="direto">Direto e Objetivo</option>
+  <option value="amigavel">Amigável e Casual</option>
+  <option value="professor">Professor Explicativo</option>
+  <option value="poetico">Poético e Criativo</option>
+  <option value="humorado">Bem-Humorado</option>
+</select>
+
         <button type="submit">Registrar</button>
         </div>
       </form>
