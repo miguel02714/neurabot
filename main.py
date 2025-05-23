@@ -100,24 +100,79 @@ def buscar_resposta(perguntas, mensagem):
     if correspondencias:
         pergunta_original = next(p for p in perguntas if normalizar(p.split(":")[0]) == correspondencias[0])
         return pergunta_original.split(":")[1].strip()
-    return None
+    return None  # fallback se não encontrar
+
+# --- Bloco principal ---
+try:
+    if current_user.is_authenticated:
+        ultimas_perguntas = current_user.mensagens
+    else:
+        ultimas_perguntas = "Nenhuma mensagem anterior disponível. Usuário não autenticado."
+
+    resposta = buscar_resposta(perguntas, nova_mensagem)
+
+    variavel_pergunta1 = (
+        f"Olá! Analise a frase '{resposta}' e diga se ela é uma resposta coerente e diretamente relacionada à mensagem original: '{nova_mensagem}'. Se fizer sentido e tiver relação direta, diga 'Sim'. Caso não tenha relação ou não responda à mensagem, diga apenas 'Não'."
+
+    )
+
+    response = co.chat(
+        model='command-r-plus',
+        message=variavel_pergunta1,
+        max_tokens=150,
+        temperature=0.4
+    )
+
+    if response == "Não":
+        resultado = None
+    else:
+        resultado = response
+
+except Exception as e:
+    print(f"Erro: {e}")
+    resultado = None
 
 # Cliente Cohere
 co = cohere.Client(os.getenv("COHERE_API_KEY") or "VnAKRl6kF5ksOAEvhQWwuDI5XMwyWEVIdpEX6Krl")
 
 def buscar_resposta_gerada(mensagem):
     try:
+        ultimas_perguntas = (
+            current_user.mensagens if current_user.is_authenticated
+            else "Nenhuma mensagem anterior disponível. Usuário não autenticado."
+        )
+        estilo_de_fala = getattr(current_user, 'estilo', 'neutro')
+
+        prompt = (
+            f"Use as últimas mensagens para manter o contexto da conversa.\n"
+            f"Se perguntarem 'quem foi Miguel Viana', diga que foi o programador da NeuraBot aos 14 anos, apaixonado por tecnologia.\n"
+            f"Responda no estilo {estilo_de_fala}.\n"
+            f"Você é uma IA brasileira criada pelo programador e CEO Miguel Viana, via NeuraBot.\n"
+            f"Nunca mencione nomes como COHERE ou qualquer outro relacionado — ignore completamente.\n"
+            f"Se as mensagens forem aleatórias ou sem sentido, diga que foi criada pela VOX.\n"
+            f"Considere sempre as últimas mensagens (principalmente a penúltima e a última).\n"
+            f"\nÚltimas mensagens: {ultimas_perguntas}\n"
+            f"Mensagem atual: {mensagem}"
+        )
+
         response = co.chat(
             model='command-r-plus',
-            message=mensagem,
+            message=prompt,
             max_tokens=500,
             temperature=0.5
         )
         return response.text.strip()
+
     except Exception as e:
         return f"Erro ao tentar se comunicar com a IA externa: {str(e)}"
 
-
+def salvar_mensagem(conteudo):
+    if current_user.is_authenticated:
+        nova_mensagem = Mensagem(conteudo=conteudo, user_id=current_user.id)
+        db.session.add(nova_mensagem)
+        db.session.commit()
+        return True
+    return False
 
 @app.route("/admin")
 def pagina_login_admin():
@@ -129,20 +184,20 @@ def login_admin():
     email_correto = "migueladmin@gmail.com"
     senha_correta = "@NeuraBot123321"
 
-    if request.method == "GET":
+    if request.method == "POST":
         email1 = request.form.get('email')
         senha1 = request.form.get('password')
 
         if email1 == email_correto and senha1 == senha_correta:
             return redirect(url_for('paginaadmin'))
         else:
-            flash("Email ou senha incorretos")
-            return redirect(url_for("pagina_login_admin"))
+            
+            return redirect(url_for("login_admin"))
 
-    return render_template("admin.html")  # Ou 'login-admin.html'
+    return render_template("admin.html")  # Página com o formulário de login
 
 
-@app.route("/admin1")
+@app.route("/paginaadmin")
 def paginaadmin():
     usuarios = Usuario.query.all()
     senha =current_user.senha,
@@ -182,35 +237,35 @@ def transcrever_audio():
 
 # Lógica combinada de resposta
 def responder(mensagem):
-    # Comando para gerar imagem
+    # 1. Geração de imagem com comando específico
     if mensagem.lower().startswith("gerar imagem:"):
         prompt = mensagem[len("gerar imagem:"):].strip()
-        return gerar_imagem_freepik(prompt)  # Certifique-se de implementar essa função
+        return gerar_imagem_freepik(prompt)  # Essa função deve gerar imagem com base no prompt
 
+    # 2. Verifica se o usuário está em um tema atual
     tema_atual = session.get('tema_atual')
 
-    # 1. Busca em FAQ do tema atual (se estiver definido)
+    # 3. Busca no FAQ do tema atual
     if tema_atual and tema_atual in qa_dict:
         resposta = buscar_resposta(qa_dict[tema_atual], mensagem)
         if resposta:
             return resposta
 
-    # 2. Busca em todos os temas disponíveis (não só "geral")
+    # 4. Busca nos FAQs de todos os temas
     for tema, perguntas in qa_dict.items():
         resposta = buscar_resposta(perguntas, mensagem)
         if resposta:
             return resposta
 
-    # 3. Se não encontrou em nenhum FAQ, gera com IA
+    # 5. Se não encontrou resposta, gera com IA externa
     resposta_gerada = buscar_resposta_gerada(mensagem)
 
-    # 4. Salva no banco
+    # 6. Salva a nova pergunta/resposta no banco
     nova_qa = QA(pergunta=mensagem, resposta=resposta_gerada)
     db.session.add(nova_qa)
     db.session.commit()
 
     return resposta_gerada
-
 # Rotas principais
 @app.route('/')
 def inicio():
@@ -287,8 +342,8 @@ def registrar():
                 email = data.get("email", "")
 
                 # Validações
-                if len(nome) < 3:
-                    return jsonify({"status": "erro", "mensagem": "O nome deve ter pelo menos 3 caracteres."}), 400
+                if len(nome) < 8:
+                    return jsonify({"status": "erro", "mensagem": "O nome deve ter pelo menos 8 caracteres."}), 400
                 if len(email) < 5:
                     return jsonify({"status": "erro", "mensagem": "O email deve ter pelo menos 5 caracteres."}), 400
 
@@ -299,7 +354,7 @@ def registrar():
                     return jsonify({"status": "sucesso"})
 
                 senha_fake = generate_password_hash("google_login")
-                novo_usuario = Usuario(nome=nome, email=email, senha=senha_fake, foto=foto_padrao)
+                novo_usuario = Usuario(nome=nome, email=email, senha=senha_fake, foto=foto_padrao,estilo=estilo)
                 db.session.add(novo_usuario)
                 db.session.commit()
                 login_user(novo_usuario)
@@ -500,24 +555,41 @@ def chat():
 def trocarfoto1():
     return redirect(url_for('trocarfoto'))
 
-
 @app.route("/chat1", methods=["GET", "POST"])
 @login_required
 def chat1():
-      
     if request.method == "POST":
         data = request.get_json()
         user_input = data.get("message", "")
+        
+        # Resposta da IA ou FAQ
         response = responder(user_input)
-        nova_mensagem = Mensagem(conteudo=user_input, usuario_id=current_user.id)
+        
+        # Verificar se é a primeira mensagem
+        mensagens_antigas = Mensagem.query.filter_by(usuario_id=current_user.id).count()
+        primeira_mensagem = (mensagens_antigas == 0)
+
+        # Salvar mensagem no banco
+        nova_mensagem = Mensagem(
+            conteudo=user_input,
+            usuario_id=current_user.id,
+        )
+
         db.session.add(nova_mensagem)
         db.session.commit()
+
+        if primeira_mensagem:
+            print("✅ Essa foi a primeira mensagem do usuário!")
+
         return jsonify({"response": response})
-    return render_template("chat1.html",
+
+    return render_template(
+        "chat1.html",
         foto=current_user.foto,
         nome_usuario=current_user.nome,
         email_usuario=current_user.email,
-        localizacao_usuario=getattr(current_user, "localizacao", "Não definida"))
+        localizacao_usuario=getattr(current_user, "localizacao", "Não definida")
+    )
 
 @app.route('/perfil')
 @login_required
