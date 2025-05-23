@@ -358,6 +358,42 @@
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#191d1e', endColorstr='#283139',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
 	background-attachment: absolute
 }
+.footer {
+  background-color: #111;
+  color: #eee;
+  padding: 20px;
+  text-align: center;
+}
+
+.footer-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.footer-links a {
+  color: #00ffc8;
+  text-decoration: none;
+  font-size: 16px;
+  transition: color 0.3s;
+}
+
+.footer-links a:hover {
+  color: #fff;
+}
+
+.footer-links i {
+  margin-right: 6px;
+}
+
   </style>
 </head>
 <body>
@@ -404,11 +440,25 @@
     </p>
   </div>
 
-  <div class="testarIa">
-     <canvas id="projector">Your browser does not support the Canvas element.</canvas>
-    <h2>🤖 Experimente o futuro com a IA 100% Brasileira</h2>
+ <footer class="footer">
+  <div class="footer-content">
+    <p>&copy; 2025 NeuraBot. Todos os direitos reservados.</p>
+    <ul class="footer-links">
+      <li><a href="#">Sobre</a></li>
+      <li><a href="#">Política</a></li>
+      <li>
+        <a href="https://wa.me/5599999999999" target="_blank">
+          <i class="fab fa-whatsapp"></i> Instagram
+        </a>
+      </li>
+    </ul>
+  </div>
+</footer>
 
-    <button class="ai-button-glow"><a href="https://neurabot.shop/registrar">QUERO TESTAR</a></button>
+<!-- Link para ícones do Font Awesome -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+    
     
   </div>
 <script>

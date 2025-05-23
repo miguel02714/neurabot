@@ -16,9 +16,9 @@ body, html {
   margin: 0;
   padding: 0;
   height: 100%;
-  background: #000012;
+  background: #0a0a1a;
   font-family: 'Roboto', sans-serif;
-  color: #eee;
+  color: #e0e0f0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -27,185 +27,205 @@ body, html {
 
 #starfield {
   position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  pointer-events: none;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   z-index: 0;
-  background: radial-gradient(ellipse at center, #050525 0%, #000012 100%);
-  animation: starTwinkle 10s infinite ease-in-out alternate;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, #121233 0%, #0a0a1a 100%);
+  animation: starTwinkle 15s infinite ease-in-out alternate;
 }
 
 @keyframes starTwinkle {
-  0%, 100% { background-position: 0% 0%; }
-  50% { background-position: 50% 50%; }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.9; }
 }
 
 #app-container {
   width: 360px;
   max-width: 95vw;
-  perspective: 1200px;
   z-index: 10;
-  padding: 20px;
+  padding: 25px;
+  perspective: 1200px;
 }
 
 .flip-card {
   width: 100%;
-  background: rgba(10, 10, 30, 0.8);
-  border-radius: 20px;
-  box-shadow: 0 0 30px #1a1a4d, inset 0 0 15px #668cff80;
-  transition: transform 0.6s ease;
+  background: rgba(20, 20, 50, 0.85);
+  border-radius: 16px;
+  box-shadow: 0 0 40px #1a1a4d80, inset 0 0 20px #6699ff55;
+  transition: transform 0.5s ease;
   transform-style: preserve-3d;
-  padding: 20px;
+  padding: 40px; /* aumentei padding */
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
+  gap: 40px; /* aumentei gap */
+  height: auto;
 }
 
 .side {
-  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.2rem;
-}
-
-.front {
-  border-radius: 15px;
-  background-color: rgba(10, 10, 30, 0.7);
+  gap: 32px; /* aumentei gap */
+  width: 100%;
 }
 
 h1 {
   font-family: 'Orbitron', sans-serif;
+  font-size: 2.6rem;
   text-align: center;
-  font-size: 2.5rem;
-  margin: 0;
-  color: #92c1ff;
-  text-shadow: 0 0 15px #92c1ff88;
-}
-
-h2 {
-  margin: 0 auto;
+  color: #87bfff;
+  margin-bottom: 20px; /* aumentei margem */
+  text-shadow: 0 0 18px #87bfff88;
 }
 
 input[type="email"],
 input[type="password"],
-input[type="text"] {
-  padding: 0.75rem 1rem;
-  border-radius: 10px;
+input[type="text"],
+select {
+  padding: 16px 20px; /* aumentei padding */
+  border-radius: 12px;
   border: none;
-  outline: none;
-  font-size: 1rem;
-  background: #1a1a3a;
-  color: #cce0ff;
-  box-shadow: inset 0 0 5px #5691f5;
+  background: #1b1b3a;
+  color: #dde9ff;
+  font-size: 1.1rem; /* aumentei fonte */
   width: 100%;
-  transition: 0.3s ease;
+  box-shadow: inset 0 0 8px #4f83ff88;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 12px; /* adicionei margem inferior */
 }
 
-input:focus {
-  background-color: #2e3a62;
-  box-shadow: inset 0 0 8px #7daaff;
+input:focus,
+select:focus {
+  background: #273766;
+  box-shadow: 0 0 0 3px rgba(80, 125, 255, 0.4);
+  outline: none;
+  color: #fff;
 }
 
 button {
-  padding: 0.8rem 1rem;
+  width: 100%;
+  padding: 1.2rem 1.6rem; /* aumentei padding */
   border-radius: 10px;
-  font-weight: 700;
-  font-size: 1rem;
+  background: linear-gradient(135deg, #3b82f6, #60a5fa);
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.1rem; /* aumentei fonte */
   border: none;
   cursor: pointer;
-  background: linear-gradient(135deg, #357ced, #5691f5);
-  color: white;
-  box-shadow: 0 0 15px #357cedaa;
+  box-shadow: 0 0 20px #3b82f655;
   transition: all 0.3s ease;
-  width: 100%;
+  margin-top: 20px; /* adicionei margem superior */
 }
 
 button:hover {
-  background: linear-gradient(135deg, #5691f5, #357ced);
   transform: translateY(-2px);
+  box-shadow: 0 0 30px #3b82f6aa;
 }
 
 .google-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  background-color: #ffffff;
-  border: 1px solid #dadce0;
+  gap: 16px; /* aumentei gap */
+  padding: 16px; /* aumentei padding */
+  background: #fff;
+  color: #444;
   border-radius: 10px;
-  padding: 12px;
-  font-size: 16px;
   font-weight: 500;
+  font-size: 17px; /* aumentei fonte */
   font-family: 'Roboto', sans-serif;
-  color: #3c4043;
-  cursor: pointer;
+  border: 1px solid #ddd;
   transition: all 0.3s ease;
   width: 100%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 24px; /* adicionei margem superior */
 }
 
 .google-btn:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
   transform: translateY(-1px);
 }
 
 .google-btn:active {
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
-  transform: scale(0.98);
+  transform: scale(0.97);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .google-btn img {
-  height: 20px;
-  width: 20px;
+  width: 24px; /* aumentei tamanho */
+  height: 24px; /* aumentei tamanho */
 }
 
-.teste1 {
-  gap: 10px;
-}
-
-/* Mobile Responsive */
+/* Responsive adjustments */
 @media (max-width: 400px) {
   #app-container {
-    width: 95vw;
-    padding: 10px;
+    padding: 15px;
   }
 
   .flip-card {
-    padding: 1.5rem;
-    gap: 1.5rem;
+    padding: 25px;
+    gap: 28px;
   }
 
   h1 {
     font-size: 2rem;
   }
 }
-select {
-  width: 100%;
-  max-width: 300px;
-  padding: 10px 14px;
-  font-size: 16px;
-  font-family: 'Segoe UI', sans-serif;
-  color: #333;
-  background-color: #f9f9f9;
-  border: 2px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 24px; /* aumentei gap */
+  font-size: 1rem; /* aumentei fonte */
+  cursor: pointer;
+  user-select: none;
+  color: #cce0ff;
+  margin-top: 24px; /* margem para separar do anterior */
+  position: relative;
 }
 
-select:focus {
-  outline: none;
-  border-color: #4f46e5; /* cor roxa elegante */
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-  background-color: #fff;
-  color: #000;
-  font-weight: 500;
+.checkbox-container input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
   cursor: pointer;
+  height: 0;
+  width: 40px;
+}
+
+.checkmark {
+  height: 24px; /* maior */
+  width: 44px; /* maior */
+  background-color: #1a1a3a;
+  border: 2px solid #5691f5;
+  border-radius: 6px; /* mais arredondado */
+  display: inline-block;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.checkbox-container input:checked ~ .checkmark {
+  background-color: #357ced;
+  border-color: #7daaff;
+}
+
+.checkmark::after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 8px;
+  top: 4px;
+  width: 7px;
+  height: 14px;
+  border: solid #fff;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+
+.checkbox-container input:checked ~ .checkmark::after {
+  display: block;
 }
 
   </style>
@@ -234,8 +254,13 @@ select:focus {
   <option value="poetico">Poético e Criativo</option>
   <option value="humorado">Bem-Humorado</option>
 </select>
+<label class="checkbox-container">
+  <input type="checkbox" id="terms-checkbox" />
+  <span class="checkmark"></span>
+  <p>Eu aceito todos os termos de<a href="">política e privacidade</a>  da <strong>Neura Bot</strong></p>
+</label>
 
-        <button type="submit">Registrar</button>
+        <button id="register-btn" type="submit">Registrar</button>
         </div>
       </form>
 
@@ -268,7 +293,12 @@ select:focus {
 
     return JSON.parse(jsonPayload);
   }
+const checkbox = document.getElementById('terms-checkbox');
+const button = document.getElementById('register-btn');
 
+checkbox.addEventListener('change', () => {
+  button.disabled = !checkbox.checked;
+});
   function handleCredentialResponse(response) {
     const data = parseJwt(response.credential);
     const nome = data.name;
