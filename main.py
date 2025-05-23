@@ -200,7 +200,6 @@ def login_admin():
 @app.route("/paginaadmin")
 def paginaadmin():
     usuarios = Usuario.query.all()
-    senha =current_user.senha,
     mensagens = Mensagem.query.all()
     qa = QA.query.all()
     return render_template('paginaadmin.html', usuarios=usuarios, mensagens=mensagens, qa=qa)
