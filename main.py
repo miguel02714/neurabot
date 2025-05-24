@@ -616,7 +616,9 @@ def registrarconta():
 @app.route('/ir-login', methods=["GET", "POST"])
 def irlogin():
     return redirect(url_for('login_view'))
-
+@app.route('/politicaprivacidade')
+def politicaprivacidade():
+    return render_template('politicaprivacidade.html')
 @app.route("/mensagens")
 @login_required
 def mensagens():
