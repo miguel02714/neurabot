@@ -11,7 +11,6 @@ import cohere
 import os
 from dotenv import load_dotenv
 from google.auth.transport import requests as google_requests
-from sinonimos import dicionario
 
 load_dotenv()
 
@@ -41,33 +40,12 @@ def user_loader(id):
 qa_dict = {
     "apresentacao": apresentacao,
     }
-def inverter_dicionario(dicionario):
-    mapa = {}
-    for chave, sinonimos in dicionario.items():
-        mapa[chave] = chave  # garantir que a chave também se normalize para ela mesma
-        for sinonimo in sinonimos:
-            mapa[sinonimo] = chave
-    return mapa
 
-# Criar o mapa de sinônimos invertido uma vez
-mapa_sinonimos = inverter_dicionario(dicionario)
-
-# Função principal
+# Função para normalizar texto
 def normalizar(texto):
-    # Remover acentos
     texto = ''.join(c for c in unicodedata.normalize('NFD', texto) if unicodedata.category(c) != 'Mn')
-    
-    # Converter para minúsculas e remover pontuação
-    texto = texto.lower().translate(str.maketrans('', '', string.punctuation))
-    
-    # Dividir em palavras
-    palavras = texto.split()
-
-    # Substituir cada palavra pelo seu "sinônimo base", se existir
-    palavras_normalizadas = [mapa_sinonimos.get(p, p) for p in palavras]
-
-    # Juntar novamente em string sem espaços (ou com, se preferir)
-    return ''.join(palavras_normalizadas)
+    texto = texto.translate(str.maketrans('', '', string.punctuation + ' '))
+    return texto.lower()
 
 
 @app.route('/auth/google', methods=['POST'])
@@ -200,7 +178,9 @@ def salvar_mensagem(conteudo):
 def pagina_login_admin():
     return render_template('admin.html')  # ou 'login-admin.html' se preferir
 
-
+@app.route('/')
+def politicaprivacidade():
+    return render_template('politicaprivacidade.html')
 @app.route("/login-admin", methods=["GET", "POST"])
 def login_admin():
     email_correto = "migueladmin@gmail.com"
@@ -576,6 +556,13 @@ def chat():
 def trocarfoto1():
     return redirect(url_for('trocarfoto'))
 
+
+@app.route('/baixarapp', methods=["GET", "POST"])
+def baixarapp():
+    return render_template('baixar.html')
+
+
+
 @app.route("/chat1", methods=["GET", "POST"])
 @login_required
 def chat1():
@@ -638,9 +625,7 @@ def registrarconta():
 @app.route('/ir-login', methods=["GET", "POST"])
 def irlogin():
     return redirect(url_for('login_view'))
-@app.route('/politicaprivacidade')
-def politicaprivacidade():
-    return render_template('politicaprivacidade.html')
+
 @app.route("/mensagens")
 @login_required
 def mensagens():
