@@ -178,7 +178,7 @@ def salvar_mensagem(conteudo):
 def pagina_login_admin():
     return render_template('admin.html')  # ou 'login-admin.html' se preferir
 
-@app.route('/')
+@app.route('/politicaprivacidade')
 def politicaprivacidade():
     return render_template('politicaprivacidade.html')
 @app.route("/login-admin", methods=["GET", "POST"])
